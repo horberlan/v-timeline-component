@@ -7,7 +7,10 @@ import dts from "vite-plugin-dts";
 export default defineConfig({
   plugins: [
     vue(),
-    dts(),
+    dts({
+      outDir: "dist/types",
+      staticImport: true,
+    }),
     {
       name: "include-types",
       generateBundle(options, bundle) {
@@ -22,10 +25,12 @@ export default defineConfig({
     },
   ],
   build: {
+    minify: false,
     lib: {
       entry: resolve(__dirname, "src/index.ts"),
       name: "Timeline",
-      fileName: "timeline",
+      fileName: "index",
+      formats: ['es', 'umd'],
     },
     rollupOptions: {
       external: ["vue"],

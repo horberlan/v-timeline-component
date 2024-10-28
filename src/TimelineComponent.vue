@@ -4,7 +4,7 @@
     :class="{ horizontal: layout === 'horizontal' }"
   >
     <div
-      v-for="(event, index) in timelineEvents"
+      v-for="(event, index) in sortedTimelineEvents"
       :key="index"
       class="timeline-event"
     >
@@ -12,7 +12,7 @@
         class="timeline-marker"
         :class="{
           'is-first': index === 0,
-          'is-last': index === timelineEvents.length - 1,
+          'is-last': index === sortedTimelineEvents.length - 1,
         }"
       ></div>
       <div class="timeline-content">
@@ -21,7 +21,9 @@
           <p class="event-date">{{ event.date }}</p>
           <p class="event-description">{{ event.description }}</p>
         </template>
-        <template v-else> <slot :event="event" :index="index" /> </template>
+        <template v-else>
+          <slot :event="event" :index="index" />
+        </template>
       </div>
     </div>
     <div ref="timelineLine" class="timeline-line"></div>
@@ -35,7 +37,7 @@ import {
   onMounted,
   type Ref,
   type PropType,
-  watch,
+  watchEffect,
 } from "vue";
 
 interface TimelineEvent {
@@ -56,7 +58,7 @@ export default defineComponent({
       default: "#ddd",
       type: String,
     },
-    merkerSize: {
+    markerSize: {
       default: "0.75rem",
       type: String,
     },
@@ -74,15 +76,19 @@ export default defineComponent({
       type: Array as PropType<TimelineEvent[]>,
     },
   },
+
   setup(props, { slots }) {
     const timelineLine: Ref<null | HTMLElement> = ref(null);
-    const timelineEvents = ref(props.timelineEvents);
-    timelineEvents.value.sort((a, b) => {
-      return +new Date(a.date) - +new Date(b.date);
-    });
+    const sortedTimelineEvents = ref(
+      props.timelineEvents.sort((a, b) => {
+        return +new Date(a.date) - +new Date(b.date);
+      })
+    );
 
-    onMounted(() => {
-      const markers = document.querySelectorAll(".timeline-marker");
+    const getLayoutAndSetDirection = () => {
+      const markers = document.querySelectorAll(
+        ".timeline-marker"
+      ) as NodeListOf<HTMLDivElement>;
       const firstMarker = markers[0];
       const lastMarker = markers[markers.length - 1];
 
@@ -90,25 +96,15 @@ export default defineComponent({
         .querySelector(".timeline-container")
         ?.getBoundingClientRect();
       if (!timelineContainerRect) return;
-      getloyoutAndSetDirection(firstMarker, lastMarker, timelineContainerRect);
-    });
-
-    const getloyoutAndSetDirection = (
-      firstMarker,
-      lastMarker,
-      timelineContainerRect
-    ) => {
       if (props.layout === "vertical") {
         const lineLeft =
           firstMarker.getBoundingClientRect().left -
           timelineContainerRect.left +
           firstMarker.offsetWidth / 2;
-
         const lineTop =
           firstMarker.getBoundingClientRect().top -
           timelineContainerRect.top +
           firstMarker.offsetHeight / 2;
-
         const lineHeight =
           lastMarker.getBoundingClientRect().top -
           timelineContainerRect.top +
@@ -126,12 +122,10 @@ export default defineComponent({
           firstMarker.getBoundingClientRect().top -
           timelineContainerRect.top +
           firstMarker.offsetHeight / 2;
-
         const lineLeft =
           firstMarker.getBoundingClientRect().left -
           timelineContainerRect.left +
           firstMarker.offsetWidth / 2;
-
         const lineWidth =
           lastMarker.getBoundingClientRect().left -
           timelineContainerRect.left +
@@ -146,17 +140,27 @@ export default defineComponent({
         timelineLine.value.style.height = props.lineWidth;
       }
     };
+    onMounted(() => {
+      getLayoutAndSetDirection();
+    });
 
+    watchEffect(
+      () => {
+        if (!timelineLine.value) return;
+
+        getLayoutAndSetDirection();
+      },
+      { flush: "post" }
+    );
     return {
-      timelineEvents,
+      sortedTimelineEvents,
       timelineLine,
     };
   },
 });
 </script>
 
-<style scoped>
-
+<style>
 .timeline-container {
   display: flex;
   position: relative;
@@ -168,18 +172,14 @@ export default defineComponent({
 }
 
 .timeline-marker {
-  width: v-bind(merkerSize);
-  height: v-bind(merkerSize);
+  width: v-bind(markerSize);
+  height: v-bind(markerSize);
   background-color: v-bind(color);
   border-radius: 50%;
   position: absolute;
   transform: translateX(-50%);
   z-index: 2;
 }
-
-/* .timeline-marker.is-first,
-.timeline-marker.is-last {
-} */
 
 .timeline-content {
   margin-inline: 2rem;

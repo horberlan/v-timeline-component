@@ -5,7 +5,8 @@
     color="#ddd"
     merker-size="0.75rem"
     :timeline-events="timelineEvents"
-  >
+    layout="horizontal"
+    >
     <template v-slot="{ event, index }">
       <h4>{{ event.title }}</h4>
       <p>Event Index: {{ index }}</p>

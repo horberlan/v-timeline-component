@@ -1,4 +1,4 @@
-import { defineComponent, ref, onMounted, useCssVars, openBlock, createElementBlock, normalizeClass, Fragment, renderList, createElementVNode, toDisplayString, renderSlot } from "vue";
+import { defineComponent, ref, onMounted, watchEffect, useCssVars, openBlock, createElementBlock, normalizeClass, Fragment, renderList, createElementVNode, toDisplayString, renderSlot } from "vue";
 const __default__ = defineComponent({
   name: "TimelineComponent",
   props: {
@@ -10,7 +10,7 @@ const __default__ = defineComponent({
       default: "#ddd",
       type: String
     },
-    merkerSize: {
+    markerSize: {
       default: "0.75rem",
       type: String
     },
@@ -30,20 +30,20 @@ const __default__ = defineComponent({
   },
   setup(props, { slots }) {
     const timelineLine = ref(null);
-    const timelineEvents = ref(props.timelineEvents);
-    timelineEvents.value.sort((a, b) => {
-      return +new Date(a.date) - +new Date(b.date);
-    });
-    onMounted(() => {
+    const sortedTimelineEvents = ref(
+      props.timelineEvents.sort((a, b) => {
+        return +new Date(a.date) - +new Date(b.date);
+      })
+    );
+    const getLayoutAndSetDirection = () => {
       var _a;
-      const markers = document.querySelectorAll(".timeline-marker");
+      const markers = document.querySelectorAll(
+        ".timeline-marker"
+      );
       const firstMarker = markers[0];
       const lastMarker = markers[markers.length - 1];
       const timelineContainerRect = (_a = document.querySelector(".timeline-container")) == null ? void 0 : _a.getBoundingClientRect();
       if (!timelineContainerRect) return;
-      getloyoutAndSetDirection(firstMarker, lastMarker, timelineContainerRect);
-    });
-    const getloyoutAndSetDirection = (firstMarker, lastMarker, timelineContainerRect) => {
       if (props.layout === "vertical") {
         const lineLeft = firstMarker.getBoundingClientRect().left - timelineContainerRect.left + firstMarker.offsetWidth / 2;
         const lineTop = firstMarker.getBoundingClientRect().top - timelineContainerRect.top + firstMarker.offsetHeight / 2;
@@ -64,16 +64,26 @@ const __default__ = defineComponent({
         timelineLine.value.style.height = props.lineWidth;
       }
     };
+    onMounted(() => {
+      getLayoutAndSetDirection();
+    });
+    watchEffect(
+      () => {
+        if (!timelineLine.value) return;
+        getLayoutAndSetDirection();
+      },
+      { flush: "post" }
+    );
     return {
-      timelineEvents,
+      sortedTimelineEvents,
       timelineLine
     };
   }
 });
 const __injectCSSVars__ = () => {
   useCssVars((_ctx) => ({
-    "bd04997a": _ctx.merkerSize,
-    "f0bcd602": _ctx.color
+    "448013ea": _ctx.markerSize,
+    "7ea486b3": _ctx.color
   }));
 };
 const __setup__ = __default__.setup;
@@ -100,7 +110,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: normalizeClass(["timeline-container", { horizontal: _ctx.layout === "horizontal" }])
   }, [
-    (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.timelineEvents, (event, index) => {
+    (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.sortedTimelineEvents, (event, index) => {
       return openBlock(), createElementBlock("div", {
         key: index,
         class: "timeline-event"
@@ -108,7 +118,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         createElementVNode("div", {
           class: normalizeClass(["timeline-marker", {
             "is-first": index === 0,
-            "is-last": index === _ctx.timelineEvents.length - 1
+            "is-last": index === _ctx.sortedTimelineEvents.length - 1
           }])
         }, null, 2),
         createElementVNode("div", _hoisted_1, [

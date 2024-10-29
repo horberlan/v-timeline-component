@@ -13,7 +13,7 @@
         default: "#ddd",
         type: String
       },
-      merkerSize: {
+      markerSize: {
         default: "0.75rem",
         type: String
       },
@@ -33,20 +33,20 @@
     },
     setup(props, { slots }) {
       const timelineLine = vue.ref(null);
-      const timelineEvents = vue.ref(props.timelineEvents);
-      timelineEvents.value.sort((a, b) => {
-        return +new Date(a.date) - +new Date(b.date);
-      });
-      vue.onMounted(() => {
+      const sortedTimelineEvents = vue.ref(
+        props.timelineEvents.sort((a, b) => {
+          return +new Date(a.date) - +new Date(b.date);
+        })
+      );
+      const getLayoutAndSetDirection = () => {
         var _a;
-        const markers = document.querySelectorAll(".timeline-marker");
+        const markers = document.querySelectorAll(
+          ".timeline-marker"
+        );
         const firstMarker = markers[0];
         const lastMarker = markers[markers.length - 1];
         const timelineContainerRect = (_a = document.querySelector(".timeline-container")) == null ? void 0 : _a.getBoundingClientRect();
         if (!timelineContainerRect) return;
-        getloyoutAndSetDirection(firstMarker, lastMarker, timelineContainerRect);
-      });
-      const getloyoutAndSetDirection = (firstMarker, lastMarker, timelineContainerRect) => {
         if (props.layout === "vertical") {
           const lineLeft = firstMarker.getBoundingClientRect().left - timelineContainerRect.left + firstMarker.offsetWidth / 2;
           const lineTop = firstMarker.getBoundingClientRect().top - timelineContainerRect.top + firstMarker.offsetHeight / 2;
@@ -67,16 +67,26 @@
           timelineLine.value.style.height = props.lineWidth;
         }
       };
+      vue.onMounted(() => {
+        getLayoutAndSetDirection();
+      });
+      vue.watchEffect(
+        () => {
+          if (!timelineLine.value) return;
+          getLayoutAndSetDirection();
+        },
+        { flush: "post" }
+      );
       return {
-        timelineEvents,
+        sortedTimelineEvents,
         timelineLine
       };
     }
   });
   const __injectCSSVars__ = () => {
     vue.useCssVars((_ctx) => ({
-      "bd04997a": _ctx.merkerSize,
-      "f0bcd602": _ctx.color
+      "448013ea": _ctx.markerSize,
+      "7ea486b3": _ctx.color
     }));
   };
   const __setup__ = __default__.setup;
@@ -103,7 +113,7 @@
     return vue.openBlock(), vue.createElementBlock("div", {
       class: vue.normalizeClass(["timeline-container", { horizontal: _ctx.layout === "horizontal" }])
     }, [
-      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(_ctx.timelineEvents, (event, index) => {
+      (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(_ctx.sortedTimelineEvents, (event, index) => {
         return vue.openBlock(), vue.createElementBlock("div", {
           key: index,
           class: "timeline-event"
@@ -111,7 +121,7 @@
           vue.createElementVNode("div", {
             class: vue.normalizeClass(["timeline-marker", {
               "is-first": index === 0,
-              "is-last": index === _ctx.timelineEvents.length - 1
+              "is-last": index === _ctx.sortedTimelineEvents.length - 1
             }])
           }, null, 2),
           vue.createElementVNode("div", _hoisted_1, [

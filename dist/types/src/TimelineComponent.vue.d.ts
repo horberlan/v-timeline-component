@@ -13,7 +13,7 @@ declare const _default: DefineComponent<ExtractPropTypes<{
         default: string;
         type: StringConstructor;
     };
-    merkerSize: {
+    markerSize: {
         default: string;
         type: StringConstructor;
     };
@@ -31,7 +31,7 @@ declare const _default: DefineComponent<ExtractPropTypes<{
         type: PropType<TimelineEvent[]>;
     };
 }>, {
-    timelineEvents: Ref<{
+    sortedTimelineEvents: Ref<{
         title: string;
         date: string;
         description: string;
@@ -50,7 +50,7 @@ declare const _default: DefineComponent<ExtractPropTypes<{
         default: string;
         type: StringConstructor;
     };
-    merkerSize: {
+    markerSize: {
         default: string;
         type: StringConstructor;
     };
@@ -70,7 +70,7 @@ declare const _default: DefineComponent<ExtractPropTypes<{
 }>> & Readonly<{}>, {
     hasCustomContent: boolean;
     color: string;
-    merkerSize: string;
+    markerSize: string;
     lineWidth: string;
     layout: string;
 }, {}, {}, {}, string, ComponentProvideOptions, true, {}, any>;

@@ -19,6 +19,30 @@
   marker-size="1rem"
   line-width="3px"
 />
+// ...
+
+const myEvents = ref([
+  {
+    title: "Event 1 Title",
+    date: "2023-02-15",
+    description: "loremMaiores qui optio omnis dolor.",
+  },
+  {
+    title: "Event 2 Title",
+    date: "2023-03-01",
+    description: "nisi facere modi",
+  },
+  {
+    title: "Event 3 Title",
+    date: "2023-04-20",
+    description: "Aperiam animi ut. Odit ullam eaque.",
+  },
+  {
+    title: "Event 4 Title",
+    date: "2023-01-20",
+    description: "Iusto laboriosam non nulla nisi soluta nobis est dolor ea.",
+  },
+]);
 ```
 
 ### Basic Example (Horizontal Layout)

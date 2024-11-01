@@ -10,9 +10,22 @@
     <svg
       :class="classes['line-connecting-markers']"
       xmlns="http://www.w3.org/2000/svg"
-      :style="{ position: 'absolute', top: 0, left: 0 }"
-      :width="timelineContainerRect?.width || 0"
-      :height="timelineContainerRect?.height || 0"
+      :style="{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        height: props.layout === 'horizontal' ? '100%' : 'auto',
+      }"
+      :width="
+        props.layout === 'horizontal'
+          ? timelineContainerRect?.width || 0
+          : '100%'
+      "
+      :height="
+        props.layout === 'horizontal'
+          ? '100%'
+          : timelineContainerRect?.height || 0
+      "
     >
       <line
         v-for="(line, index) in lines"
@@ -38,8 +51,14 @@ const props = withDefaults(
     lineWidth?: string;
     markerSize?: string;
     color?: string;
+    layout?: "vertical" | "horizontal";
   }>(),
-  { markerSize: "16px", lineWidth: "2px", color: "currentColor" }
+  {
+    markerSize: "16px",
+    lineWidth: "2px",
+    color: "currentColor",
+    layout: "vertical",
+  }
 );
 
 const slot = useSlots();
@@ -53,6 +72,9 @@ const timelineContainerRect = ref<DOMRect | null>(null);
 const sortedTimelineEvents = ref(
   props.element?.sort((a, b) => +new Date(a.date) - +new Date(b.date)) ?? []
 );
+const lines = ref<
+  Array<{ x1: number; y1: number; x2: number; y2: number; randomClass: string }>
+>([]);
 
 function generateRandomClass(): string {
   return `marker-${Math.random().toString(36).slice(2, 11)}`;
@@ -70,37 +92,43 @@ function vTimeline() {
 
   return h(
     "div",
-    { class: `${classes["timeline-events"]} ${uniqueId}` },
+    {
+      class: `${classes["timeline-events"]} ${uniqueId}`,
+      style: {
+        display: props.layout === "horizontal" ? "flex" : "block",
+        flexDirection: props.layout === "horizontal" ? "row" : "column",
+      },
+    },
     sortedTimelineEvents.value.map((item, index) => {
       const randomMarkerClass = generateRandomClass();
 
-      return h("div", { style: "position: relative; margin-bottom: 20px;" }, [
-        h(
-          "svg",
-          {
-            width: `${size}${unit}`,
-            height: `${size}${unit}`,
-            style: "position: absolute; transform: translate(-50%, -50%);",
-            class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`,
-          },
-          [
-            h("circle", {
-              cx: `${radius}${unit}`,
-              cy: `${radius}${unit}`,
-              r: `${radius / 2}${unit}`,
-              fill: props.color,
-            }),
-          ]
-        ),
-        slot.default?.({ event: item, index }),
-      ]);
+      return h(
+        "div",
+        { style: "position: relative; margin-bottom: 20px; flex: 1;" },
+        [
+          h(
+            "svg",
+            {
+              width: `${size}${unit}`,
+              height: `${size}${unit}`,
+              style: "position: absolute; transform: translate(-50%, -50%);",
+              class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`,
+            },
+            [
+              h("circle", {
+                cx: `${radius}${unit}`,
+                cy: `${radius}${unit}`,
+                r: `${radius / 2}${unit}`,
+                fill: props.color,
+              }),
+            ]
+          ),
+          slot.default?.({ event: item, index }),
+        ]
+      );
     })
   );
 }
-
-const lines = ref<
-  Array<{ x1: number; y1: number; x2: number; y2: number; randomClass: string }>
->([]);
 
 function updateMarkersAndLine() {
   if (!containerRef.value) return;
@@ -123,30 +151,36 @@ function updateMarkersAndLine() {
   lines.value = [];
 
   markers.value.forEach((marker, index) => {
-    if (!timelineContainerRect.value || !markers.value) return;
-    const nextMarker =
-      index < markers.value.length - 1 ? markers.value[index + 1] : null;
-    if (!nextMarker) return;
-
     const markerRect = marker.getBoundingClientRect();
-    const nextMarkerRect = nextMarker.getBoundingClientRect();
+    if (!timelineContainerRect.value || !markers.value) return;
 
-    const x1 =
+    let x1 =
       markerRect.left - timelineContainerRect.value.left + markerRect.width / 2;
-    const y1 =
+    let y1 =
       markerRect.top - timelineContainerRect.value.top + markerRect.height / 2;
-    const x2 =
-      nextMarkerRect.left -
-      timelineContainerRect.value.left +
-      nextMarkerRect.width / 2;
-    const y2 =
-      nextMarkerRect.top -
-      timelineContainerRect.value.top +
-      nextMarkerRect.height / 2;
 
-    const randomLineClass = generateRandomClass();
+    const nextMarker = markers.value[index + 1];
+    if (nextMarker) {
+      const nextMarkerRect = nextMarker.getBoundingClientRect();
+      let x2 =
+        nextMarkerRect.left -
+        timelineContainerRect.value.left +
+        nextMarkerRect.width / 2;
+      let y2 =
+        nextMarkerRect.top -
+        timelineContainerRect.value.top +
+        nextMarkerRect.height / 2;
 
-    lines.value.push({ x1, y1, x2, y2, randomClass: randomLineClass });
+      // Para layout horizontal, fixar y1 e y2 em um valor constante
+      if (props.layout === "horizontal") {
+        const midY = nextMarkerRect.height / 2 + nextMarkerRect.top; // Ajustado para alinhar com os marcadores
+        y1 = midY - timelineContainerRect.value.top;
+        y2 = midY - timelineContainerRect.value.top;
+      }
+
+      const randomLineClass = generateRandomClass();
+      lines.value.push({ x1, y1, x2, y2, randomClass: randomLineClass });
+    }
   });
 }
 
@@ -171,11 +205,7 @@ onMounted(() => {
 .line-connecting-markers {
   position: absolute;
   z-index: 2;
-  width: v-bind(lineWidth);
-  color: v-bind(color);
-}
-
-.event-content {
-  margin-top: 1.5rem;
+  stroke-width: v-bind(lineWidth);
+  stroke: v-bind(color);
 }
 </style>

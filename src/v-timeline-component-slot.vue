@@ -1,55 +1,53 @@
 <template>
-  <template v-if="sortedTimelineEvents.length">
-    <vTimeline @vue:updated="updateMarkersAndLine()" />
-  </template>
-  <svg
-    :class="classes['line-connecting-markers']"
-    xmlns="http://www.w3.org/2000/svg"
-    :style="{ position: 'absolute', top: 0, left: 0 }"
-    :width="timelineContainerRect?.width || 0"
-    :height="timelineContainerRect?.height || 0"
+  <div
+    ref="containerRef"
+    :class="`${uniqueId}-container`"
+    style="position: relative"
   >
-    <line
-      v-for="(line, index) in lines"
-      :key="index"
-      :x1="line.x1"
-      :y1="line.y1"
-      :x2="line.x2"
-      :y2="line.y2"
-      :stroke="props.color"
-      :stroke-width="props.lineWidth"
-      :class="`line-${line.randomClass}`"
-    />
-  </svg>
+    <template v-if="sortedTimelineEvents.length">
+      <vTimeline :uniqueId="uniqueId" />
+    </template>
+    <svg
+      :class="classes['line-connecting-markers']"
+      xmlns="http://www.w3.org/2000/svg"
+      :style="{ position: 'absolute', top: 0, left: 0 }"
+      :width="timelineContainerRect?.width || 0"
+      :height="timelineContainerRect?.height || 0"
+    >
+      <line
+        v-for="(line, index) in lines"
+        :key="index"
+        :x1="line.x1"
+        :y1="line.y1"
+        :x2="line.x2"
+        :y2="line.y2"
+        :stroke="props.color"
+        :stroke-width="props.lineWidth"
+        :class="`line-${uniqueId}-${line.randomClass}`"
+      />
+    </svg>
+  </div>
 </template>
 
 <script setup lang="ts">
-import {
-  h,
-  ref,
-  useSlots,
-  watchEffect,
-  type Ref,
-  useCssModule,
-  onMounted,
-} from "vue";
+import { h, ref, useSlots, onMounted, type Ref, useCssModule } from "vue";
 
 const props = withDefaults(
   defineProps<{
     element: Array<{ date: string }>;
     lineWidth?: string;
+    markerSize?: string;
     color?: string;
   }>(),
-  {
-    lineWidth: "2px",
-    color: "currentColor",
-  }
+  { markerSize: "16px", lineWidth: "2px", color: "currentColor" }
 );
 
 const slot = useSlots();
 const classes = useCssModule();
+const uniqueId = `timeline-${Math.random().toString(36).slice(2, 11)}`;
 
-const markers: Ref<NodeListOf<HTMLDivElement> | null> = ref(null);
+const containerRef = ref<HTMLElement | null>(null);
+const markers: Ref<NodeListOf<SVGCircleElement> | null> = ref(null);
 const timelineContainerRect = ref<DOMRect | null>(null);
 
 const sortedTimelineEvents = ref(
@@ -57,20 +55,43 @@ const sortedTimelineEvents = ref(
 );
 
 function generateRandomClass(): string {
-  return `marker-${Math.random().toString(36).substr(2, 9)}`;
+  return `marker-${Math.random().toString(36).slice(2, 11)}`;
+}
+
+function getCircleSize() {
+  const size = parseFloat(props.markerSize || "16");
+  const unit = props.markerSize?.replace(size.toString(), "") || "px";
+  const radius = size / 2;
+  return { radius, size, unit };
 }
 
 function vTimeline() {
+  const { radius, size, unit } = getCircleSize();
+
   return h(
     "div",
-    { class: [classes["timeline-events"]]},
+    { class: `${classes["timeline-events"]} ${uniqueId}` },
     sortedTimelineEvents.value.map((item, index) => {
       const randomMarkerClass = generateRandomClass();
 
-      return h("div", [
-        h("div", {
-          class: `${classes.marker} ${randomMarkerClass}`,
-        }),
+      return h("div", { style: "position: relative; margin-bottom: 20px;" }, [
+        h(
+          "svg",
+          {
+            width: `${size}${unit}`,
+            height: `${size}${unit}`,
+            style: "position: absolute; transform: translate(-50%, -50%);",
+            class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`,
+          },
+          [
+            h("circle", {
+              cx: `${radius}${unit}`,
+              cy: `${radius}${unit}`,
+              r: `${radius / 2}${unit}`,
+              fill: props.color,
+            }),
+          ]
+        ),
         slot.default?.({ event: item, index }),
       ]);
     })
@@ -82,18 +103,27 @@ const lines = ref<
 >([]);
 
 function updateMarkersAndLine() {
-  markers.value = document.querySelectorAll(
-    `.${classes.marker}`
-  ) as NodeListOf<HTMLDivElement>;
+  if (!containerRef.value) return;
 
-  timelineContainerRect.value = document
-    .querySelector(`.${classes["timeline-events"]}`)
-    ?.getBoundingClientRect() as DOMRect;
+  markers.value = containerRef.value.querySelectorAll(
+    `.${uniqueId}.${classes.marker} circle`
+  ) as NodeListOf<SVGCircleElement>;
+
+  const timelineEventsContainer = containerRef.value.querySelector(
+    `.${uniqueId}.${classes["timeline-events"]}`
+  );
+
+  if (timelineEventsContainer) {
+    timelineContainerRect.value =
+      timelineEventsContainer.getBoundingClientRect();
+  }
+
+  if (!markers.value.length || !timelineContainerRect.value) return;
 
   lines.value = [];
 
   markers.value.forEach((marker, index) => {
-    if (!markers.value || !timelineContainerRect.value) return;
+    if (!timelineContainerRect.value || !markers.value) return;
     const nextMarker =
       index < markers.value.length - 1 ? markers.value[index + 1] : null;
     if (!nextMarker) return;
@@ -119,6 +149,7 @@ function updateMarkersAndLine() {
     lines.value.push({ x1, y1, x2, y2, randomClass: randomLineClass });
   });
 }
+
 onMounted(() => {
   updateMarkersAndLine();
 });
@@ -131,13 +162,10 @@ onMounted(() => {
 }
 
 .marker {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
   position: absolute;
-  transform: translateX(-50%);
+  width: v-bind(markerSize);
+  height: v-bind(markerSize);
   z-index: 3;
-  background-color: v-bind(color);
 }
 
 .line-connecting-markers {
@@ -147,8 +175,7 @@ onMounted(() => {
   color: v-bind(color);
 }
 
-.line-[class^="marker-"] {
-  stroke-dasharray: 4;
-  background-color: red;
+.event-content {
+  margin-top: 1.5rem;
 }
 </style>

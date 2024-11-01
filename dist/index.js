@@ -1,96 +1,185 @@
-import { defineComponent, ref, onMounted, watchEffect, useCssVars, openBlock, createElementBlock, normalizeClass, Fragment, renderList, createElementVNode, toDisplayString, renderSlot } from "vue";
-const __default__ = defineComponent({
-  name: "TimelineComponent",
+import { defineComponent, useCssVars, useCssModule, useSlots, ref, onMounted, onBeforeUnmount, watch, openBlock, createElementBlock, normalizeClass, createBlock, createCommentVNode, unref, normalizeStyle, Fragment, renderList, h } from "vue";
+const _hoisted_1 = ["width", "height"];
+const _hoisted_2 = ["x1", "y1", "x2", "y2", "stroke", "stroke-width"];
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "v-timeline-component",
   props: {
-    hasCustomContent: {
-      default: false,
-      type: Boolean
-    },
-    color: {
-      default: "#ddd",
-      type: String
-    },
-    markerSize: {
-      default: "0.75rem",
-      type: String
-    },
-    lineWidth: {
-      default: "2px",
-      type: String
-    },
-    layout: {
-      default: "vertical",
-      type: String,
-      validator: (value) => ["vertical", "horizontal"].includes(value)
-    },
-    timelineEvents: {
-      required: true,
-      type: Array
-    }
+    element: {},
+    lineWidth: { default: "2px" },
+    markerSize: { default: "16px" },
+    color: { default: "currentColor" },
+    layout: { default: "vertical" }
   },
-  setup(props, { slots }) {
-    const timelineLine = ref(null);
+  setup(__props) {
+    var _a;
+    useCssVars((_ctx) => ({
+      "1d498d70": _ctx.markerSize,
+      "7240fd7d": _ctx.lineWidth,
+      "2a59242e": _ctx.color
+    }));
+    const classes = useCssModule("vTimeline");
+    const props = __props;
+    const slot = useSlots();
+    const uniqueId = `timeline-${Math.random().toString(36).slice(2, 11)}`;
+    const containerRef = ref(null);
+    const markers = ref(null);
+    const timelineContainerRect = ref(null);
     const sortedTimelineEvents = ref(
-      props.timelineEvents.sort((a, b) => {
-        return +new Date(a.date) - +new Date(b.date);
-      })
+      ((_a = props.element) == null ? void 0 : _a.sort((a, b) => +new Date(a.date) - +new Date(b.date))) ?? []
     );
-    const getLayoutAndSetDirection = () => {
-      var _a;
-      const markers = document.querySelectorAll(
-        ".timeline-marker"
+    const lines = ref([]);
+    function generateRandomClass() {
+      return `marker-${Math.random().toString(36).slice(2, 11)}`;
+    }
+    function getCircleSize() {
+      var _a2;
+      const size = parseFloat(props.markerSize || "16");
+      const unit = ((_a2 = props.markerSize) == null ? void 0 : _a2.replace(size.toString(), "")) || "px";
+      const radius = size / 2;
+      return { radius, size, unit };
+    }
+    function vTimeline() {
+      const { radius, size, unit } = getCircleSize();
+      return h(
+        "div",
+        {
+          class: `${classes["timeline-events"]} ${uniqueId}`,
+          style: {
+            display: props.layout === "horizontal" ? "flex" : "block",
+            flexDirection: props.layout === "horizontal" ? "row" : "column"
+          }
+        },
+        sortedTimelineEvents.value.map((item, index) => {
+          var _a2;
+          const randomMarkerClass = generateRandomClass();
+          return h("div", { class: classes.event }, [
+            h(
+              "svg",
+              {
+                width: `${size}${unit}`,
+                height: `${size}${unit}`,
+                class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`
+              },
+              [
+                h("circle", {
+                  cx: `${radius}${unit}`,
+                  cy: `${radius}${unit}`,
+                  r: `${radius / 2}${unit}`,
+                  fill: props.color
+                })
+              ]
+            ),
+            h(
+              "div",
+              { class: classes["event-content"] },
+              (_a2 = slot.default) == null ? void 0 : _a2.call(slot, { event: item, index })
+            )
+          ]);
+        })
       );
-      const firstMarker = markers[0];
-      const lastMarker = markers[markers.length - 1];
-      const timelineContainerRect = (_a = document.querySelector(".timeline-container")) == null ? void 0 : _a.getBoundingClientRect();
-      if (!timelineContainerRect) return;
-      if (props.layout === "vertical") {
-        const lineLeft = firstMarker.getBoundingClientRect().left - timelineContainerRect.left + firstMarker.offsetWidth / 2;
-        const lineTop = firstMarker.getBoundingClientRect().top - timelineContainerRect.top + firstMarker.offsetHeight / 2;
-        const lineHeight = lastMarker.getBoundingClientRect().top - timelineContainerRect.top + lastMarker.offsetHeight / 2 - lineTop;
-        if (!timelineLine.value) return;
-        timelineLine.value.style.top = `${lineTop}px`;
-        timelineLine.value.style.height = `${lineHeight}px`;
-        timelineLine.value.style.left = `${lineLeft}px`;
-        timelineLine.value.style.width = props.lineWidth;
-      } else if (props.layout === "horizontal") {
-        const lineTop = firstMarker.getBoundingClientRect().top - timelineContainerRect.top + firstMarker.offsetHeight / 2;
-        const lineLeft = firstMarker.getBoundingClientRect().left - timelineContainerRect.left + firstMarker.offsetWidth / 2;
-        const lineWidth = lastMarker.getBoundingClientRect().left - timelineContainerRect.left + lastMarker.offsetWidth / 2 - lineLeft;
-        if (!timelineLine.value) return;
-        timelineLine.value.style.top = `${lineTop}px`;
-        timelineLine.value.style.width = `${lineWidth}px`;
-        timelineLine.value.style.left = `${lineLeft}px`;
-        timelineLine.value.style.height = props.lineWidth;
+    }
+    function updateMarkersAndLine() {
+      if (!containerRef.value) return;
+      markers.value = containerRef.value.querySelectorAll(
+        `.${uniqueId}.${classes.marker} circle`
+      );
+      const timelineEventsContainer = containerRef.value.querySelector(
+        `.${uniqueId}.${classes["timeline-events"]}`
+      );
+      if (timelineEventsContainer) {
+        timelineContainerRect.value = timelineEventsContainer.getBoundingClientRect();
       }
-    };
+      if (!markers.value.length || !timelineContainerRect.value) return;
+      lines.value = [];
+      markers.value.forEach((marker2, index) => {
+        const markerRect = marker2.getBoundingClientRect();
+        if (!timelineContainerRect.value || !markers.value) return;
+        let x1 = markerRect.left - timelineContainerRect.value.left + markerRect.width / 2;
+        let y1 = markerRect.top - timelineContainerRect.value.top + markerRect.height / 2;
+        const nextMarker = markers.value[index + 1];
+        if (nextMarker) {
+          const nextMarkerRect = nextMarker.getBoundingClientRect();
+          let x2 = nextMarkerRect.left - timelineContainerRect.value.left + nextMarkerRect.width / 2;
+          let y2 = nextMarkerRect.top - timelineContainerRect.value.top + nextMarkerRect.height / 2;
+          if (props.layout === "horizontal") {
+            const midY = nextMarkerRect.height / 2 + nextMarkerRect.top;
+            y1 = midY - timelineContainerRect.value.top;
+            y2 = midY - timelineContainerRect.value.top;
+          }
+          const randomLineClass = generateRandomClass();
+          if (isNaN(y1)) return;
+          lines.value.push({ x1, y1, x2, y2, randomClass: randomLineClass });
+        }
+      });
+    }
     onMounted(() => {
-      getLayoutAndSetDirection();
+      updateMarkersAndLine();
+      const resizeObserver = new ResizeObserver(() => {
+        updateMarkersAndLine();
+      });
+      if (containerRef.value) {
+        resizeObserver.observe(containerRef.value);
+      }
+      onBeforeUnmount(() => {
+        if (containerRef.value) {
+          resizeObserver.unobserve(containerRef.value);
+        }
+      });
     });
-    watchEffect(
-      () => {
-        if (!timelineLine.value) return;
-        getLayoutAndSetDirection();
-      },
-      { flush: "post" }
-    );
-    return {
-      sortedTimelineEvents,
-      timelineLine
+    watch(sortedTimelineEvents, () => {
+      updateMarkersAndLine();
+    });
+    return (_ctx, _cache) => {
+      var _a2, _b;
+      return openBlock(), createElementBlock("div", {
+        ref_key: "containerRef",
+        ref: containerRef,
+        class: normalizeClass(`${uniqueId}-container`),
+        style: { "position": "relative" }
+      }, [
+        sortedTimelineEvents.value.length ? (openBlock(), createBlock(vTimeline, {
+          key: 0,
+          uniqueId
+        })) : createCommentVNode("", true),
+        (openBlock(), createElementBlock("svg", {
+          class: normalizeClass(unref(classes)["line-connecting-markers"]),
+          xmlns: "http://www.w3.org/2000/svg",
+          style: normalizeStyle({
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 1,
+            height: props.layout === "horizontal" ? "100%" : "auto"
+          }),
+          width: props.layout === "horizontal" ? ((_a2 = timelineContainerRect.value) == null ? void 0 : _a2.width) || 0 : "100%",
+          height: props.layout === "horizontal" ? "100%" : ((_b = timelineContainerRect.value) == null ? void 0 : _b.height) || 0
+        }, [
+          (openBlock(true), createElementBlock(Fragment, null, renderList(lines.value, (line, index) => {
+            return openBlock(), createElementBlock("line", {
+              key: index,
+              x1: line.x1,
+              y1: line.y1,
+              x2: line.x2,
+              y2: line.y2,
+              stroke: props.color,
+              "stroke-width": props.lineWidth,
+              class: normalizeClass(`line-${uniqueId}-${line.randomClass}`)
+            }, null, 10, _hoisted_2);
+          }), 128))
+        ], 14, _hoisted_1))
+      ], 2);
     };
   }
 });
-const __injectCSSVars__ = () => {
-  useCssVars((_ctx) => ({
-    "448013ea": _ctx.markerSize,
-    "7ea486b3": _ctx.color
-  }));
+const event = "_event_62pxj_6";
+const marker = "_marker_62pxj_11";
+const style0 = {
+  "timeline-events": "_timeline-events_62pxj_2",
+  event,
+  "event-content": "_event-content_62pxj_7",
+  marker,
+  "line-connecting-markers": "_line-connecting-markers_62pxj_20"
 };
-const __setup__ = __default__.setup;
-__default__.setup = __setup__ ? (props, ctx) => {
-  __injectCSSVars__();
-  return __setup__(props, ctx);
-} : __injectCSSVars__;
 const _export_sfc = (sfc, props) => {
   const target = sfc.__vccOpts || sfc;
   for (const [key, val] of props) {
@@ -98,48 +187,12 @@ const _export_sfc = (sfc, props) => {
   }
   return target;
 };
-const _hoisted_1 = { class: "timeline-content" };
-const _hoisted_2 = { class: "event-title" };
-const _hoisted_3 = { class: "event-date" };
-const _hoisted_4 = { class: "event-description" };
-const _hoisted_5 = {
-  ref: "timelineLine",
-  class: "timeline-line"
+const cssModules = {
+  "vTimeline": style0
 };
-function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", {
-    class: normalizeClass(["timeline-container", { horizontal: _ctx.layout === "horizontal" }])
-  }, [
-    (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.sortedTimelineEvents, (event, index) => {
-      return openBlock(), createElementBlock("div", {
-        key: index,
-        class: "timeline-event"
-      }, [
-        createElementVNode("div", {
-          class: normalizeClass(["timeline-marker", {
-            "is-first": index === 0,
-            "is-last": index === _ctx.sortedTimelineEvents.length - 1
-          }])
-        }, null, 2),
-        createElementVNode("div", _hoisted_1, [
-          !_ctx.hasCustomContent ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
-            createElementVNode("h4", _hoisted_2, toDisplayString(event.title), 1),
-            createElementVNode("p", _hoisted_3, toDisplayString(event.date), 1),
-            createElementVNode("p", _hoisted_4, toDisplayString(event.description), 1)
-          ], 64)) : renderSlot(_ctx.$slots, "default", {
-            key: 1,
-            event,
-            index
-          })
-        ])
-      ]);
-    }), 128)),
-    createElementVNode("div", _hoisted_5, null, 512)
-  ], 2);
-}
-const TimelineComponent = /* @__PURE__ */ _export_sfc(__default__, [["render", _sfc_render]]);
+const vTimelineComponent = /* @__PURE__ */ _export_sfc(_sfc_main, [["__cssModules", cssModules]]);
 export {
-  TimelineComponent
+  vTimelineComponent
 };
 
 // Types: index.d.ts

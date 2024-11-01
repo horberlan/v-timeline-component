@@ -12,7 +12,7 @@
     "src/v-timeline-component.vue"
   ],
   "sideEffects": [
-    "src/**.vue"
+    "src/v-timeline-component.vue"
   ],
   "scripts": {
     "dev": "vite",
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/node": "^22.8.1",
     "@vitejs/plugin-vue": "^5.1.4",
+    "@vue/compiler-sfc": "^3.5.12",
     "@vue/tsconfig": "^0.5.1",
     "typescript": "~5.6.3",
     "vite": "^5.4.10",

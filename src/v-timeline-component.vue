@@ -55,6 +55,7 @@ import {
   onBeforeUnmount,
 } from "vue";
 
+const classes = useCssModule("vTimeline");
 const props = withDefaults(
   defineProps<{
     element: Array<{ date: string }>;
@@ -72,7 +73,6 @@ const props = withDefaults(
 );
 
 const slot = useSlots();
-const classes = useCssModule();
 
 const uniqueId = `timeline-${Math.random().toString(36).slice(2, 11)}`;
 
@@ -216,7 +216,7 @@ watch(sortedTimelineEvents, () => {
 });
 </script>
 
-<style module lang="css">
+<style module="vTimeline" lang="css">
 .timeline-events {
   position: relative;
   display: block;

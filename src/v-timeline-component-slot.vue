@@ -14,6 +14,7 @@
         position: 'absolute',
         top: 0,
         left: 0,
+        zIndex: 1,
         height: props.layout === 'horizontal' ? '100%' : 'auto',
       }"
       :width="
@@ -128,7 +129,11 @@ function vTimeline() {
             }),
           ]
         ),
-        slot.default?.({ event: item, index }),
+        h(
+          "div",
+          { class: classes["event-content"] },
+          slot.default?.({ event: item, index })
+        ),
       ]);
     })
   );
@@ -182,6 +187,7 @@ function updateMarkersAndLine() {
       }
 
       const randomLineClass = generateRandomClass();
+      if (isNaN(y1)) return;
       lines.value.push({ x1, y1, x2, y2, randomClass: randomLineClass });
     }
   });
@@ -214,22 +220,22 @@ watch(sortedTimelineEvents, () => {
   position: relative;
   display: block;
 }
-.event {
+.event,
+.event-content {
   position: relative;
-  margin-bottom: 20px;
   flex: 1;
 }
 .marker {
   position: absolute;
   width: v-bind(markerSize);
   height: v-bind(markerSize);
-  z-index: 3;
+  z-index: 2;
+  /* maybe ill remove it */
   transform: translate(-50%, -50%);
 }
 
 .line-connecting-markers {
   position: absolute;
-  z-index: 2;
   stroke-width: v-bind(lineWidth);
   stroke: v-bind(color);
 }

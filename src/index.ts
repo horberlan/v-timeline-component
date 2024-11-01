@@ -1,3 +1,3 @@
-import TimelineComponent from "./TimelineComponent.vue";
+import vTimelineComponent from "./v-timeline-component.vue";
 
-export { TimelineComponent };
+export { vTimelineComponent };

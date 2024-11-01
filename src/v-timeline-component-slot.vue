@@ -43,7 +43,16 @@
 </template>
 
 <script setup lang="ts">
-import { h, ref, useSlots, onMounted, type Ref, useCssModule } from "vue";
+import {
+  h,
+  ref,
+  useSlots,
+  onMounted,
+  type Ref,
+  useCssModule,
+  watch,
+  onBeforeUnmount,
+} from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -166,9 +175,8 @@ function updateMarkersAndLine() {
         timelineContainerRect.value.top +
         nextMarkerRect.height / 2;
 
-      // Para layout horizontal, fixar y1 e y2 em um valor constante
       if (props.layout === "horizontal") {
-        const midY = nextMarkerRect.height / 2 + nextMarkerRect.top; // Ajustado para alinhar com os marcadores
+        const midY = nextMarkerRect.height / 2 + nextMarkerRect.top;
         y1 = midY - timelineContainerRect.value.top;
         y2 = midY - timelineContainerRect.value.top;
       }
@@ -180,6 +188,23 @@ function updateMarkersAndLine() {
 }
 
 onMounted(() => {
+  updateMarkersAndLine();
+
+  const resizeObserver = new ResizeObserver(() => {
+    updateMarkersAndLine();
+  });
+  if (containerRef.value) {
+    resizeObserver.observe(containerRef.value);
+  }
+
+  onBeforeUnmount(() => {
+    if (containerRef.value) {
+      resizeObserver.unobserve(containerRef.value);
+    }
+  });
+});
+
+watch(sortedTimelineEvents, () => {
   updateMarkersAndLine();
 });
 </script>

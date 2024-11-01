@@ -13,12 +13,12 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   setup(__props) {
     var _a;
     useCssVars((_ctx) => ({
-      "1d498d70": _ctx.markerSize,
-      "7240fd7d": _ctx.lineWidth,
-      "2a59242e": _ctx.color
+      "ea75d4c4": _ctx.markerSize,
+      "443cb78f": _ctx.lineWidth,
+      "7b58b740": _ctx.color
     }));
-    const classes = useCssModule("vTimeline");
     const props = __props;
+    const classes = useCssModule("vTimeline");
     const slot = useSlots();
     const uniqueId = `timeline-${Math.random().toString(36).slice(2, 11)}`;
     const containerRef = ref(null);

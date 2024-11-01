@@ -55,7 +55,6 @@ import {
   onBeforeUnmount,
 } from "vue";
 
-const classes = useCssModule("vTimeline");
 const props = withDefaults(
   defineProps<{
     element: Array<{ date: string }>;
@@ -71,7 +70,7 @@ const props = withDefaults(
     layout: "vertical",
   }
 );
-
+const classes = useCssModule("vTimeline");
 const slot = useSlots();
 
 const uniqueId = `timeline-${Math.random().toString(36).slice(2, 11)}`;

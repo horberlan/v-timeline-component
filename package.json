@@ -1,22 +1,19 @@
 {
-  "name": "@horberlan/v-timeline-component",
+  "name": "v-timeline-component",
   "private": false,
-  "version": "0.0.2",
-  "description": "Customizable Timeline Component for Vue",
+  "version": "0.0.3",
+  "description": "Customizable timeline component for Vue",
   "type": "module",
-  "main": "src/TimelineComponent.vue",
-  "module": "src/TimelineComponent.vue",
+  "main": "src/v-timeline-component.vue",
+  "module": "src/v-timeline-component.vue",
   "types": "dist/types/src/index.d.ts",
   "files": [
     "dist/**/*",
-    "src/TimelineComponent.vue"
+    "src/v-timeline-component.vue"
   ],
   "sideEffects": [
     "src/**.vue"
   ],
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build"

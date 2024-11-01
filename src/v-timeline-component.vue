@@ -73,6 +73,7 @@ const props = withDefaults(
 
 const slot = useSlots();
 const classes = useCssModule();
+
 const uniqueId = `timeline-${Math.random().toString(36).slice(2, 11)}`;
 
 const containerRef = ref<HTMLElement | null>(null);

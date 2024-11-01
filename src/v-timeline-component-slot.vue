@@ -102,30 +102,25 @@ function vTimeline() {
     sortedTimelineEvents.value.map((item, index) => {
       const randomMarkerClass = generateRandomClass();
 
-      return h(
-        "div",
-        { style: "position: relative; margin-bottom: 20px; flex: 1;" },
-        [
-          h(
-            "svg",
-            {
-              width: `${size}${unit}`,
-              height: `${size}${unit}`,
-              style: "position: absolute; transform: translate(-50%, -50%);",
-              class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`,
-            },
-            [
-              h("circle", {
-                cx: `${radius}${unit}`,
-                cy: `${radius}${unit}`,
-                r: `${radius / 2}${unit}`,
-                fill: props.color,
-              }),
-            ]
-          ),
-          slot.default?.({ event: item, index }),
-        ]
-      );
+      return h("div", { class: classes.event }, [
+        h(
+          "svg",
+          {
+            width: `${size}${unit}`,
+            height: `${size}${unit}`,
+            class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`,
+          },
+          [
+            h("circle", {
+              cx: `${radius}${unit}`,
+              cy: `${radius}${unit}`,
+              r: `${radius / 2}${unit}`,
+              fill: props.color,
+            }),
+          ]
+        ),
+        slot.default?.({ event: item, index }),
+      ]);
     })
   );
 }
@@ -194,12 +189,17 @@ onMounted(() => {
   position: relative;
   display: block;
 }
-
+.event {
+  position: relative;
+  margin-bottom: 20px;
+  flex: 1;
+}
 .marker {
   position: absolute;
   width: v-bind(markerSize);
   height: v-bind(markerSize);
   z-index: 3;
+  transform: translate(-50%, -50%);
 }
 
 .line-connecting-markers {

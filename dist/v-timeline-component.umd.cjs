@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("vue")) : typeof define === "function" && define.amd ? define(["exports", "vue"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.Timeline = {}, global.Vue));
-})(this, function(exports2, vue) {
+  typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("vue")) : typeof define === "function" && define.amd ? define(["vue"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, global.VTimelineComponent = factory(global.Vue));
+})(this, function(vue) {
   "use strict";
   const _hoisted_1 = ["width", "height"];
   const _hoisted_2 = ["x1", "y1", "x2", "y2", "stroke", "stroke-width"];
@@ -194,8 +194,5 @@
     "vTimeline": style0
   };
   const vTimelineComponent = /* @__PURE__ */ _export_sfc(_sfc_main, [["__cssModules", cssModules]]);
-  exports2.vTimelineComponent = vTimelineComponent;
-  Object.defineProperty(exports2, Symbol.toStringTag, { value: "Module" });
+  return vTimelineComponent;
 });
-
-// Types: index.umd.cjs

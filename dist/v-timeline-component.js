@@ -192,7 +192,5 @@ const cssModules = {
 };
 const vTimelineComponent = /* @__PURE__ */ _export_sfc(_sfc_main, [["__cssModules", cssModules]]);
 export {
-  vTimelineComponent
+  vTimelineComponent as default
 };
-
-// Types: index.d.ts

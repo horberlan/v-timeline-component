@@ -2,7 +2,7 @@
   typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("vue")) : typeof define === "function" && define.amd ? define(["vue"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, global.VTimelineComponent = factory(global.Vue));
 })(this, function(vue) {
   "use strict";
-  const _hoisted_1 = ["width", "height"];
+  const _hoisted_1 = ["viewBox"];
   const _hoisted_2 = ["x1", "y1", "x2", "y2", "stroke", "stroke-width"];
   const _sfc_main = /* @__PURE__ */ vue.defineComponent({
     __name: "v-timeline-component",
@@ -16,9 +16,9 @@
     setup(__props) {
       var _a;
       vue.useCssVars((_ctx) => ({
-        "ea75d4c4": _ctx.markerSize,
-        "443cb78f": _ctx.lineWidth,
-        "7b58b740": _ctx.color
+        "5829f960": _ctx.markerSize,
+        "f6a958e6": _ctx.lineWidth,
+        "a1fdfb84": _ctx.color
       }));
       const props = __props;
       const classes = vue.useCssModule("vTimeline");
@@ -74,7 +74,12 @@
               ),
               vue.h(
                 "div",
-                { class: classes["event-content"] },
+                {
+                  class: [
+                    classes["event-content"],
+                    props.layout === "vertical" ? classes["event-content-vertical"] : classes["event-content-horizontal"]
+                  ]
+                },
                 (_a2 = slot.default) == null ? void 0 : _a2.call(slot, { event: item, index })
               )
             ]);
@@ -133,7 +138,7 @@
         updateMarkersAndLine();
       });
       return (_ctx, _cache) => {
-        var _a2, _b;
+        var _a2, _b, _c, _d;
         return vue.openBlock(), vue.createElementBlock("div", {
           ref_key: "containerRef",
           ref: containerRef,
@@ -152,10 +157,11 @@
               top: 0,
               left: 0,
               zIndex: 1,
-              height: props.layout === "horizontal" ? "100%" : "auto"
+              overflow: "visible",
+              width: props.layout === "horizontal" ? `${((_a2 = timelineContainerRect.value) == null ? void 0 : _a2.width) || 0}px` : "2px",
+              height: props.layout === "horizontal" ? "2px" : `${((_b = timelineContainerRect.value) == null ? void 0 : _b.height) || 0}px`
             }),
-            width: props.layout === "horizontal" ? ((_a2 = timelineContainerRect.value) == null ? void 0 : _a2.width) || 0 : "100%",
-            height: props.layout === "horizontal" ? "100%" : ((_b = timelineContainerRect.value) == null ? void 0 : _b.height) || 0
+            viewBox: `0 0 ${props.layout === "horizontal" ? ((_c = timelineContainerRect.value) == null ? void 0 : _c.width) || 0 : 2} ${props.layout === "vertical" ? ((_d = timelineContainerRect.value) == null ? void 0 : _d.height) || 0 : 2}`
           }, [
             (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList(lines.value, (line, index) => {
               return vue.openBlock(), vue.createElementBlock("line", {
@@ -174,14 +180,16 @@
       };
     }
   });
-  const event = "_event_62pxj_6";
-  const marker = "_marker_62pxj_11";
+  const event = "_event_1gn2x_6";
+  const marker = "_marker_1gn2x_20";
   const style0 = {
-    "timeline-events": "_timeline-events_62pxj_2",
+    "timeline-events": "_timeline-events_1gn2x_2",
     event,
-    "event-content": "_event-content_62pxj_7",
+    "event-content": "_event-content_1gn2x_7",
+    "event-content-horizontal": "_event-content-horizontal_1gn2x_13",
+    "event-content-vertical": "_event-content-vertical_1gn2x_16",
     marker,
-    "line-connecting-markers": "_line-connecting-markers_62pxj_20"
+    "line-connecting-markers": "_line-connecting-markers_1gn2x_27"
   };
   const _export_sfc = (sfc, props) => {
     const target = sfc.__vccOpts || sfc;

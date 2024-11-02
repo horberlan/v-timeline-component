@@ -1,23 +1,29 @@
 
-._timeline-events_62pxj_2 {
+._timeline-events_1gn2x_2 {
   position: relative;
   display: block;
 }
-._event_62pxj_6,
-._event-content_62pxj_7 {
+._event_1gn2x_6,
+._event-content_1gn2x_7 {
   position: relative;
   flex: 1;
 }
-._marker_62pxj_11 {
-  position: absolute;
-  width: var(--ea75d4c4);
-  height: var(--ea75d4c4);
-  z-index: 2;
-  /* maybe ill remove it */
-  transform: translate(-50%, -50%);
+
+/* relax young grasshopper, i will remove this soon */
+._event-content-horizontal_1gn2x_13 {
+  margin-inline-start: 0rem;
 }
-._line-connecting-markers_62pxj_20 {
+._event-content-vertical_1gn2x_16 {
+  margin-inline-start: 1rem;
+}
+._marker_1gn2x_20 {
   position: absolute;
-  stroke-width: var(--443cb78f);
-  stroke: var(--7b58b740);
+  width: var(--5829f960);
+  height: var(--5829f960);
+  z-index: 2;
+}
+._line-connecting-markers_1gn2x_27 {
+  position: absolute;
+  stroke-width: var(--f6a958e6);
+  stroke: var(--a1fdfb84);
 }

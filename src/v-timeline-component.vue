@@ -15,18 +15,21 @@
         top: 0,
         left: 0,
         zIndex: 1,
-        height: props.layout === 'horizontal' ? '100%' : 'auto',
+        overflow: 'visible',
+        width:
+          props.layout === 'horizontal'
+            ? `${timelineContainerRect?.width || 0}px`
+            : '2px',
+        height:
+          props.layout === 'horizontal'
+            ? '2px'
+            : `${timelineContainerRect?.height || 0}px`,
       }"
-      :width="
-        props.layout === 'horizontal'
-          ? timelineContainerRect?.width || 0
-          : '100%'
-      "
-      :height="
-        props.layout === 'horizontal'
-          ? '100%'
-          : timelineContainerRect?.height || 0
-      "
+      :viewBox="`0 0 ${
+        props.layout === 'horizontal' ? timelineContainerRect?.width || 0 : 2
+      } ${
+        props.layout === 'vertical' ? timelineContainerRect?.height || 0 : 2
+      }`"
     >
       <line
         v-for="(line, index) in lines"
@@ -131,7 +134,14 @@ function vTimeline() {
         ),
         h(
           "div",
-          { class: classes["event-content"] },
+          {
+            class: [
+              classes["event-content"],
+              props.layout === "vertical"
+                ? classes["event-content-vertical"]
+                : classes["event-content-horizontal"],
+            ],
+          },
           slot.default?.({ event: item, index })
         ),
       ]);
@@ -225,13 +235,20 @@ watch(sortedTimelineEvents, () => {
   position: relative;
   flex: 1;
 }
+
+/* relax young grasshopper, i will remove this soon */
+.event-content-horizontal {
+  margin-inline-start: 0rem;
+}
+.event-content-vertical {
+  margin-inline-start: 1rem;
+}
+
 .marker {
   position: absolute;
   width: v-bind(markerSize);
   height: v-bind(markerSize);
   z-index: 2;
-  /* maybe ill remove it */
-  transform: translate(-50%, -50%);
 }
 
 .line-connecting-markers {

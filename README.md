@@ -23,7 +23,7 @@ npm install v-timeline-component
 ```vue
 <vTimelineComponent
       layout="vertical"
-      :element="timelineEvents"
+      :events="timelineEvents"
       line-width="1px"
     >
       <template #default="{ event }: { event: TimelineEvent, index: number }">
@@ -79,7 +79,7 @@ const timelineEvents: Ref<TimelineEvent[]> = ref([
 ```vue
 <vTimelineComponent
       layout="horizontal"
-      :element="timelineEvents"
+      :events="timelineEvents"
       line-width="1px"
     >
       <template #default="{ event }: { event: TimelineEvent, index: number }">
@@ -89,7 +89,7 @@ const timelineEvents: Ref<TimelineEvent[]> = ref([
         <vTimelineComponent
           v-if="event.child"
           layout="vertical"
-          :element="event.child"
+          :events="event.child"
           line-width="2px"
         >
           <template
@@ -112,7 +112,7 @@ const timelineEvents: Ref<TimelineEvent[]> = ref([
 | **markerSize** | `String`        | `0.75rem`    | Size of event markers.                        |
 | **lineWidth**  | `String`        | `2px`        | Width of the timeline line.                   |
 | **layout**     | `String`        | `vertical`   | Timeline layout (`vertical` or `horizontal`). |
-| **element**    | `Array<Object>` | **Required** | Array of event objects.                       |
+| **events**    | `Array<Object>` | **Required** | Array of event objects.                       |
 
 ## Contributing
 

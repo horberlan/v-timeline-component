@@ -60,7 +60,7 @@ import {
 
 const props = withDefaults(
   defineProps<{
-    element: Array<{ date: string }>;
+    events: Array<{ date?: any }>;
     lineWidth?: string;
     markerSize?: string;
     color?: string;
@@ -73,17 +73,25 @@ const props = withDefaults(
     layout: "vertical",
   }
 );
+
+const slots = defineSlots<{
+  default(event);
+  marker(value: HTMLElement);
+}>();
+
 const classes = useCssModule("vTimeline");
 const slot = useSlots();
 
 const uniqueId = `timeline-${Math.random().toString(36).slice(2, 11)}`;
 
 const containerRef = ref<HTMLElement | null>(null);
-const markers: Ref<NodeListOf<SVGCircleElement> | null> = ref(null);
+const markers: Ref<NodeListOf<SVGCircleElement | HTMLElement> | null> =
+  ref(null);
 const timelineContainerRect = ref<DOMRect | null>(null);
 
 const sortedTimelineEvents = ref(
-  props.element?.sort((a, b) => +new Date(a.date) - +new Date(b.date)) ?? []
+  props.events?.sort((a, b) => +new Date(a.date) - +new Date(b.date)) ??
+    props.events
 );
 const lines = ref<
   Array<{ x1: number; y1: number; x2: number; y2: number; randomClass: string }>
@@ -116,22 +124,37 @@ function vTimeline() {
       const randomMarkerClass = generateRandomClass();
 
       return h("div", { class: classes.event }, [
-        h(
-          "svg",
-          {
-            width: `${size}${unit}`,
-            height: `${size}${unit}`,
-            class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`,
-          },
-          [
-            h("circle", {
-              cx: `${radius}${unit}`,
-              cy: `${radius}${unit}`,
-              r: `${radius / 2}${unit}`,
-              fill: props.color,
-            }),
-          ]
-        ),
+        !slot["marker"]
+          ? h(
+              "svg",
+              {
+                width: `${size}${unit}`,
+                height: `${size}${unit}`,
+                class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`,
+              },
+              [
+                h("circle", {
+                  cx: `${radius}${unit}`,
+                  cy: `${radius}${unit}`,
+                  r: `${radius / 2}${unit}`,
+                  fill: props.color,
+                }),
+              ]
+            )
+          : h(
+              "div",
+              {
+                class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`,
+                style: {
+                  width: `${size}${unit}`,
+                  height: `${size}${unit}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                },
+              },
+              slot["marker"]?.({ event: item, index })
+            ),
         h(
           "div",
           {
@@ -153,8 +176,8 @@ function updateMarkersAndLine() {
   if (!containerRef.value) return;
 
   markers.value = containerRef.value.querySelectorAll(
-    `.${uniqueId}.${classes.marker} circle`
-  ) as NodeListOf<SVGCircleElement>;
+    `.${uniqueId}.${classes.marker} circle, .${uniqueId}.${classes.marker}`
+  ) as NodeListOf<HTMLElement>;
 
   const timelineEventsContainer = containerRef.value.querySelector(
     `.${uniqueId}.${classes["timeline-events"]}`
@@ -197,7 +220,6 @@ function updateMarkersAndLine() {
       }
 
       const randomLineClass = generateRandomClass();
-      if (isNaN(y1)) return;
       lines.value.push({ x1, y1, x2, y2, randomClass: randomLineClass });
     }
   });

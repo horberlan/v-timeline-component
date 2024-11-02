@@ -71,7 +71,7 @@ export default defineComponent({
   },
 
   setup(props, { slots }) {
-    const timelineLine: Ref<null | HTMLElement> = ref(null);
+    const timelineLine: Ref<null | HTMLevents> = ref(null);
     const sortedTimelineEvents = ref(
       props.timelineEvents.sort((a, b) => {
         return +new Date(a.date) - +new Date(b.date);
@@ -81,7 +81,7 @@ export default defineComponent({
     const getLayoutAndSetDirection = () => {
       const markers = document.querySelectorAll(
         ".timeline-marker"
-      ) as NodeListOf<HTMLDivElement>;
+      ) as NodeListOf<HTMLDivevents>;
       const firstMarker = markers[0];
       const lastMarker = markers[markers.length - 1];
 

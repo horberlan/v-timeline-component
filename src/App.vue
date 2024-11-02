@@ -2,8 +2,9 @@
   <div class="custom-content">
     <vTimelineComponent
       layout="vertical"
-      :element="timelineEvents"
-      line-width="2px"
+      :events="timelineEvents"
+      line-width="1px"
+      color="#55acee"
     >
       <template #default="{ event }: { event: TimelineEvent, index: number }">
         <p>{{ event.title }}</p>
@@ -13,14 +14,16 @@
     </vTimelineComponent>
     <vTimelineComponent
       layout="horizontal"
-      :element="timelineEvents"
+      :events="timelineEvents"
       line-width="2px"
+      color="#aa8ed6"
     >
       <template #default="{ event }: { event: TimelineEvent, index: number }">
         <p>{{ event.title }}</p>
         <p>{{ event.description }}</p>
         <p>{{ event.date }}</p>
       </template>
+      <template #marker>💜</template>
     </vTimelineComponent>
   </div>
 </template>

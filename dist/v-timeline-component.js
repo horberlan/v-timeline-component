@@ -1,10 +1,10 @@
-import { defineComponent, useCssVars, useCssModule, useSlots, ref, onMounted, onBeforeUnmount, watch, openBlock, createElementBlock, normalizeClass, createBlock, createCommentVNode, unref, normalizeStyle, Fragment, renderList, h } from "vue";
+import { defineComponent, useCssVars, useSlots, useCssModule, ref, onMounted, onBeforeUnmount, watch, openBlock, createElementBlock, normalizeClass, createBlock, createCommentVNode, unref, normalizeStyle, Fragment, renderList, h } from "vue";
 const _hoisted_1 = ["viewBox"];
 const _hoisted_2 = ["x1", "y1", "x2", "y2", "stroke", "stroke-width"];
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "v-timeline-component",
   props: {
-    element: {},
+    events: {},
     lineWidth: { default: "2px" },
     markerSize: { default: "16px" },
     color: { default: "currentColor" },
@@ -13,11 +13,12 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   setup(__props) {
     var _a;
     useCssVars((_ctx) => ({
-      "5829f960": _ctx.markerSize,
-      "f6a958e6": _ctx.lineWidth,
-      "a1fdfb84": _ctx.color
+      "3e277427": _ctx.markerSize,
+      "313fe3e6": _ctx.lineWidth,
+      "3295a717": _ctx.color
     }));
     const props = __props;
+    useSlots();
     const classes = useCssModule("vTimeline");
     const slot = useSlots();
     const uniqueId = `timeline-${Math.random().toString(36).slice(2, 11)}`;
@@ -25,7 +26,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const markers = ref(null);
     const timelineContainerRect = ref(null);
     const sortedTimelineEvents = ref(
-      ((_a = props.element) == null ? void 0 : _a.sort((a, b) => +new Date(a.date) - +new Date(b.date))) ?? []
+      ((_a = props.events) == null ? void 0 : _a.sort((a, b) => +new Date(a.date) - +new Date(b.date))) ?? props.events
     );
     const lines = ref([]);
     function generateRandomClass() {
@@ -50,10 +51,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           }
         },
         sortedTimelineEvents.value.map((item, index) => {
-          var _a2;
+          var _a2, _b;
           const randomMarkerClass = generateRandomClass();
           return h("div", { class: classes.event }, [
-            h(
+            !slot["marker"] ? h(
               "svg",
               {
                 width: `${size}${unit}`,
@@ -68,6 +69,19 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                   fill: props.color
                 })
               ]
+            ) : h(
+              "div",
+              {
+                class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`,
+                style: {
+                  width: `${size}${unit}`,
+                  height: `${size}${unit}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }
+              },
+              (_a2 = slot["marker"]) == null ? void 0 : _a2.call(slot, { event: item, index })
             ),
             h(
               "div",
@@ -77,7 +91,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                   props.layout === "vertical" ? classes["event-content-vertical"] : classes["event-content-horizontal"]
                 ]
               },
-              (_a2 = slot.default) == null ? void 0 : _a2.call(slot, { event: item, index })
+              (_b = slot.default) == null ? void 0 : _b.call(slot, { event: item, index })
             )
           ]);
         })
@@ -86,7 +100,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     function updateMarkersAndLine() {
       if (!containerRef.value) return;
       markers.value = containerRef.value.querySelectorAll(
-        `.${uniqueId}.${classes.marker} circle`
+        `.${uniqueId}.${classes.marker} circle, .${uniqueId}.${classes.marker}`
       );
       const timelineEventsContainer = containerRef.value.querySelector(
         `.${uniqueId}.${classes["timeline-events"]}`
@@ -112,7 +126,6 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             y2 = midY - timelineContainerRect.value.top;
           }
           const randomLineClass = generateRandomClass();
-          if (isNaN(y1)) return;
           lines.value.push({ x1, y1, x2, y2, randomClass: randomLineClass });
         }
       });

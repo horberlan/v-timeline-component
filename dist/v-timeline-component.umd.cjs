@@ -7,7 +7,7 @@
   const _sfc_main = /* @__PURE__ */ vue.defineComponent({
     __name: "v-timeline-component",
     props: {
-      element: {},
+      events: {},
       lineWidth: { default: "2px" },
       markerSize: { default: "16px" },
       color: { default: "currentColor" },
@@ -16,11 +16,12 @@
     setup(__props) {
       var _a;
       vue.useCssVars((_ctx) => ({
-        "5829f960": _ctx.markerSize,
-        "f6a958e6": _ctx.lineWidth,
-        "a1fdfb84": _ctx.color
+        "3e277427": _ctx.markerSize,
+        "313fe3e6": _ctx.lineWidth,
+        "3295a717": _ctx.color
       }));
       const props = __props;
+      vue.useSlots();
       const classes = vue.useCssModule("vTimeline");
       const slot = vue.useSlots();
       const uniqueId = `timeline-${Math.random().toString(36).slice(2, 11)}`;
@@ -28,7 +29,7 @@
       const markers = vue.ref(null);
       const timelineContainerRect = vue.ref(null);
       const sortedTimelineEvents = vue.ref(
-        ((_a = props.element) == null ? void 0 : _a.sort((a, b) => +new Date(a.date) - +new Date(b.date))) ?? []
+        ((_a = props.events) == null ? void 0 : _a.sort((a, b) => +new Date(a.date) - +new Date(b.date))) ?? props.events
       );
       const lines = vue.ref([]);
       function generateRandomClass() {
@@ -53,10 +54,10 @@
             }
           },
           sortedTimelineEvents.value.map((item, index) => {
-            var _a2;
+            var _a2, _b;
             const randomMarkerClass = generateRandomClass();
             return vue.h("div", { class: classes.event }, [
-              vue.h(
+              !slot["marker"] ? vue.h(
                 "svg",
                 {
                   width: `${size}${unit}`,
@@ -71,6 +72,19 @@
                     fill: props.color
                   })
                 ]
+              ) : vue.h(
+                "div",
+                {
+                  class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`,
+                  style: {
+                    width: `${size}${unit}`,
+                    height: `${size}${unit}`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }
+                },
+                (_a2 = slot["marker"]) == null ? void 0 : _a2.call(slot, { event: item, index })
               ),
               vue.h(
                 "div",
@@ -80,7 +94,7 @@
                     props.layout === "vertical" ? classes["event-content-vertical"] : classes["event-content-horizontal"]
                   ]
                 },
-                (_a2 = slot.default) == null ? void 0 : _a2.call(slot, { event: item, index })
+                (_b = slot.default) == null ? void 0 : _b.call(slot, { event: item, index })
               )
             ]);
           })
@@ -89,7 +103,7 @@
       function updateMarkersAndLine() {
         if (!containerRef.value) return;
         markers.value = containerRef.value.querySelectorAll(
-          `.${uniqueId}.${classes.marker} circle`
+          `.${uniqueId}.${classes.marker} circle, .${uniqueId}.${classes.marker}`
         );
         const timelineEventsContainer = containerRef.value.querySelector(
           `.${uniqueId}.${classes["timeline-events"]}`
@@ -115,7 +129,6 @@
               y2 = midY - timelineContainerRect.value.top;
             }
             const randomLineClass = generateRandomClass();
-            if (isNaN(y1)) return;
             lines.value.push({ x1, y1, x2, y2, randomClass: randomLineClass });
           }
         });

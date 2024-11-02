@@ -135,6 +135,8 @@ The `#marker` slot allows for custom markers for each timeline event. Use it to 
 <template #marker>💜</template>
 ```
 
+[sample usage](src/App.vue)
+
 ## Contributing
 
 If you would like to contribute to this project, feel free to fork the repository and submit a pull request. Contributions are welcome!

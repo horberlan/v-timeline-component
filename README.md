@@ -18,6 +18,7 @@ To use the `v-timeline-component`, install it via npm:
 ```bash
 npm install v-timeline-component
 ```
+
 ### Basic Example (Vertical Layout)
 
 ```vue
@@ -112,7 +113,27 @@ const timelineEvents: Ref<TimelineEvent[]> = ref([
 | **markerSize** | `String`        | `0.75rem`    | Size of event markers.                        |
 | **lineWidth**  | `String`        | `2px`        | Width of the timeline line.                   |
 | **layout**     | `String`        | `vertical`   | Timeline layout (`vertical` or `horizontal`). |
-| **events**    | `Array<Object>` | **Required** | Array of event objects.                       |
+| **events**     | `Array<Object>` | **Required** | Array of event objects.                       |
+
+## Slots
+
+### Default Slot
+
+The default slot allows for custom content within each event on the timeline. It provides the `event` and `index` of the event.
+
+```vue
+<template #default="{ event, index }">
+  <!-- Custom content for each event -->
+</template>
+```
+
+### Marker Slot
+
+The `#marker` slot allows for custom markers for each timeline event. Use it to customize the appearance of markers with custom elements or emojis.
+
+```vue
+<template #marker>💜</template>
+```
 
 ## Contributing
 

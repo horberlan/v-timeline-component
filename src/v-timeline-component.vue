@@ -60,7 +60,7 @@ import {
 
 const props = withDefaults(
   defineProps<{
-    events: Array<{ date?: any }>;
+    events: any[];
     lineWidth?: string;
     markerSize?: string;
     color?: string;
@@ -151,6 +151,7 @@ function vTimeline() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  fontSize: `${size}${unit}`,
                 },
               },
               slot["marker"]?.({ event: item, index })

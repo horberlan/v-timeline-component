@@ -1,2 +1,2 @@
-import { default as TimelineComponent } from './TimelineComponent.vue';
-export { TimelineComponent };
+import { default as vTimelineComponent } from './v-timeline-component.vue';
+export { vTimelineComponent };

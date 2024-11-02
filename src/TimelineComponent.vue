@@ -16,14 +16,7 @@
         }"
       ></div>
       <div class="timeline-content">
-        <template v-if="!hasCustomContent">
-          <h4 class="event-title">{{ event.title }}</h4>
-          <p class="event-date">{{ event.date }}</p>
-          <p class="event-description">{{ event.description }}</p>
-        </template>
-        <template v-else>
-          <slot :event="event" :index="index" />
-        </template>
+        <slot :event="event" :index="index" />
       </div>
     </div>
     <div ref="timelineLine" class="timeline-line"></div>
@@ -78,7 +71,7 @@ export default defineComponent({
   },
 
   setup(props, { slots }) {
-    const timelineLine: Ref<null | HTMLElement> = ref(null);
+    const timelineLine: Ref<null | HTMLevents> = ref(null);
     const sortedTimelineEvents = ref(
       props.timelineEvents.sort((a, b) => {
         return +new Date(a.date) - +new Date(b.date);
@@ -88,7 +81,7 @@ export default defineComponent({
     const getLayoutAndSetDirection = () => {
       const markers = document.querySelectorAll(
         ".timeline-marker"
-      ) as NodeListOf<HTMLDivElement>;
+      ) as NodeListOf<HTMLDivevents>;
       const firstMarker = markers[0];
       const lastMarker = markers[markers.length - 1];
 
@@ -140,6 +133,7 @@ export default defineComponent({
         timelineLine.value.style.height = props.lineWidth;
       }
     };
+
     onMounted(() => {
       getLayoutAndSetDirection();
     });
@@ -185,12 +179,14 @@ export default defineComponent({
   margin-inline: 2rem;
 }
 
-.event-title {
-  margin-top: 0;
+.timeline-event.horizontal-layout {
+  display: flex;
+  align-items: flex-start;
+  margin-block: 2rem;
 }
 
-.event-date {
-  font-size: 0.9rem;
+.timeline-event.horizontal-layout.timeline-marker {
+  margin-inline-end: 1rem;
 }
 
 .timeline-line {

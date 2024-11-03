@@ -75,9 +75,7 @@ const props = withDefaults(
 );
 
 const slots = defineSlots<{
-  // i dont need to know event type...
   default(data: { event: any; index: number });
-  // I might want to pass the marker icon using my array, right?
   marker: (data: { event: any; index: number }) => HTMLElement | string;
 }>();
 

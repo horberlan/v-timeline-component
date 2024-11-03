@@ -56,6 +56,7 @@ import {
   useCssModule,
   watch,
   onBeforeUnmount,
+  computed,
 } from "vue";
 
 const props = withDefaults(
@@ -89,16 +90,19 @@ const markers: Ref<NodeListOf<SVGCircleElement | HTMLElement> | null> =
   ref(null);
 const timelineContainerRect = ref<DOMRect | null>(null);
 
-const sortedTimelineEvents = ref(
-  props.events?.sort((a, b) => +new Date(a.date) - +new Date(b.date)) ??
+const sortedTimelineEvents = computed(
+  () =>
     props.events
+      .slice()
+      .sort((a, b) => +new Date(a.date) - +new Date(b.date)) ?? props.events
 );
+
 const lines = ref<
   Array<{ x1: number; y1: number; x2: number; y2: number; randomClass: string }>
 >([]);
 
-function generateRandomClass(): string {
-  return `marker-${Math.random().toString(36).slice(2, 11)}`;
+function generateRandomMarkerClass() {
+  return `marker-${Math.random().toString(36).substring(2)}`;
 }
 
 function getCircleSize() {
@@ -121,9 +125,9 @@ function vTimeline() {
       },
     },
     sortedTimelineEvents.value.map((item, index) => {
-      const randomMarkerClass = generateRandomClass();
+      const randomMarkerClass = generateRandomMarkerClass();
 
-      return h("div", { class: classes.event }, [
+      return h("div", { class: classes.event, tabIndex: 0, ariaLabel: index }, [
         !slot["marker"]
           ? h(
               "svg",
@@ -220,7 +224,7 @@ function updateMarkersAndLine() {
         y2 = midY - timelineContainerRect.value.top;
       }
 
-      const randomLineClass = generateRandomClass();
+      const randomLineClass = generateRandomMarkerClass();
       lines.value.push({ x1, y1, x2, y2, randomClass: randomLineClass });
     }
   });
@@ -251,7 +255,6 @@ watch(sortedTimelineEvents, () => {
 <style module="vTimeline" lang="css">
 .timeline-events {
   position: relative;
-  display: block;
 }
 .event,
 .event-content {

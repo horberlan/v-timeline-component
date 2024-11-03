@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --outDir dist/types src/v-timeline-component.vue && vite build"
+    "ci": "vue-tsc --outDir dist/types src/v-timeline-component.vue && vite build"
   },
   "dependencies": {
     "vue": "^3.5.12"

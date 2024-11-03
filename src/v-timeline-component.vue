@@ -75,8 +75,8 @@ const props = withDefaults(
 );
 
 const slots = defineSlots<{
-  default(event);
-  marker(value: HTMLElement);
+  default(data: { event: any; index: number });
+  marker: (data: { event: any; index: number }) => HTMLElement | string;
 }>();
 
 const classes = useCssModule("vTimeline");

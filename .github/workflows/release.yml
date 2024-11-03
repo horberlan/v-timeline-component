@@ -17,7 +17,7 @@ jobs:
         uses: TriPSs/conventional-changelog-action@v3.7.1
         with:
           github-token: ${{ secrets.PA_TOKEN }}
-          version-file: "./package.json,./pnpm-lock.yaml"
+          version-file: "package.json,./pnpm-lock.yaml"
           output-file: "RELEASES.md"
 
       - name: Create Release
@@ -31,3 +31,6 @@ jobs:
           body: ${{ steps.changelog.outputs.clean_changelog }}
           draft: false
           prerelease: false
+
+      - name: Push release
+        run: git push origin main

@@ -1,8 +1,9 @@
 name: Publish to NPM with pnpm
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -15,15 +16,13 @@ jobs:
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
-      - name: Install pnpm 🔄
+      - name: Install pnpm 
         run: npm install -g pnpm@latest
-      - name: Install dependencies with pnpm 🛠️
+      - name: Install dependencies with pnpm 
         run: pnpm install --frozen-lockfile
-      - name: Build with pnpm (if applicable) 🔧
+      - name: Build with pnpm 
         run: pnpm ci
-      - name: Publish package on NPM with pnpm 📦
+      - name: Publish package on NPM with pnpm 
         run: pnpm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-          

@@ -23,16 +23,9 @@ jobs:
 
       - name: Create Release
         uses: actions/create-release@v1
-        if: ${{ secrets.PA_TOKEN }}
-          tag_name: ${{ steps.changelog.outputs.tag }}
-          output-file: ${{ steps.changelog.outputs.clean_changelog }}
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        env:
           GITHUB_TOKEN: ${{ secrets.PA_TOKEN }}
-          tag_name: ${{ steps.changelog.outputs.tag }}
-          output-file: RELEASES.md
-          increment: patch
-
-      - name: Create Release
-        uses: actions/create-release@v1
         with:
           tag_name: ${{ steps.changelog.outputs.tag }}
           release_name: ${{ steps.changelog.outputs.tag }}

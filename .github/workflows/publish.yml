@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies with pnpm 
         run: pnpm install --frozen-lockfile
       - name: Build with pnpm 
-        run: pnpm ci
+        run: pnpm build
       - name: Publish package on NPM with pnpm 
         run: pnpm publish --provenance --access public
         env:

@@ -16,9 +16,9 @@
     setup(__props) {
       var _a;
       vue.useCssVars((_ctx) => ({
-        "3e277427": _ctx.markerSize,
-        "313fe3e6": _ctx.lineWidth,
-        "3295a717": _ctx.color
+        "00f04470": _ctx.markerSize,
+        "99313306": _ctx.lineWidth,
+        "6dc7e5a4": _ctx.color
       }));
       const props = __props;
       vue.useSlots();
@@ -81,7 +81,8 @@
                     height: `${size}${unit}`,
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center"
+                    justifyContent: "center",
+                    fontSize: `${size}${unit}`
                   }
                 },
                 (_a2 = slot["marker"]) == null ? void 0 : _a2.call(slot, { event: item, index })

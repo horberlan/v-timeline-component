@@ -2,7 +2,7 @@
 
 ### Customizable Timeline Component for Vue
 
-The `v-timeline-component` is a flexible Vue.js component that visually displays events in a timeline format. It offers both vertical and horizontal layouts, enabling customization of event presentation, styling, and content.
+The `v-timeline-component` is a slot based vue.js component that displays events in a timeline format. It offers both vertical and horizontal layouts, enabling customization of event presentation, styling, and content.
 
 ## Features
 
@@ -22,18 +22,19 @@ npm install v-timeline-component
 ### Basic Example (Vertical Layout)
 
 ```vue
-<vTimelineComponent
-      layout="vertical"
-      :events="timelineEvents"
-      line-width="1px"
-    >
-      <template #default="{ event }: { event: TimelineEvent, index: number }">
-        <p>{{ event.title }}</p>
-        <p>{{ event.description }}</p>
-        <p>{{ event.date }}</p>
-      </template>
-    </vTimelineComponent>
-...
+<template>
+  <vTimelineComponent
+    layout="vertical"
+    :events="timelineEvents"
+    line-width="1px"
+  >
+    <template #default="{ event }: { event: TimelineEvent, index: number }">
+      <p>{{ event.title }}</p>
+      <p>{{ event.description }}</p>
+      <p>{{ event.date }}</p>
+    </template>
+  </vTimelineComponent>
+</template>
 <script setup lang="ts">
 interface TimelineEvent {
   title: string;
@@ -73,36 +74,35 @@ const timelineEvents: Ref<TimelineEvent[]> = ref([
       "Aperiam animi ut. Odit ullam eaque. Iusto laboriosam non nulla nisi soluta nobis est dolor ea",
   },
 ]);
+</script>
 ```
 
 ### Example (Horizontal Layout)
 
 ```vue
 <vTimelineComponent
-      layout="horizontal"
-      :events="timelineEvents"
-      line-width="1px"
-    >
-      <template #default="{ event }: { event: TimelineEvent, index: number }">
-        <p>{{ event.title }}</p>
-        <p>{{ event.description }}</p>
-        <p>{{ event.date }}</p>
-        <vTimelineComponent
-          v-if="event.child"
-          layout="vertical"
-          :events="event.child"
-          line-width="2px"
-        >
-          <template
-            #default="{ event }: { event: TimelineEvent, index: number }"
-          >
-            <p>{{ event.title }}</p>
-            <p>{{ event.description }}</p>
-            <p>{{ event.date }}</p>
-          </template>
-        </vTimelineComponent>
-      </template>
-    </vTimelineComponent>
+    layout="horizontal"
+    :events="timelineEvents"
+    line-width="1px"
+  >
+    <template #default="{ event }: { event: TimelineEvent, index: number }">
+      <p>{{ event.title }}</p>
+      <p>{{ event.description }}</p>
+      <p>{{ event.date }}</p>
+      <vTimelineComponent
+        v-if="event.child"
+        layout="vertical"
+        :events="event.child"
+        line-width="2px"
+      >
+        <template #default="{ event }: { event: TimelineEvent, index: number }">
+          <p>{{ event.title }}</p>
+          <p>{{ event.description }}</p>
+          <p>{{ event.date }}</p>
+        </template>
+      </vTimelineComponent>
+    </template>
+  </vTimelineComponent>
 ```
 
 ## Available Props
@@ -134,8 +134,13 @@ The `#marker` slot allows for custom markers for each timeline event. Use it to 
 ```vue
 <template #marker>💜</template>
 ```
+Or dynamically with event data:
+```vue
 
-[sample usage](src/App.vue)
+<template #marker="{ event }"> {{ event.marker }} </template>
+```
+		
+👉 [example](src/App.vue)
 
 ## Contributing
 

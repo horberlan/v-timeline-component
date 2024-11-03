@@ -17,8 +17,8 @@ jobs:
         uses: TriPSs/conventional-changelog-action@v3.7.1
         with:
           github-token: ${{ secrets.PA_TOKEN }}
-          version-file: "./package.json,./pnpm-lock.json"
-          output: "markdown"
+          version-file: "./package.json,./pnpm-lock.yaml"
+          output-file: "RELEASES.md"
 
       - name: Create Release
         uses: actions/create-release@v1

@@ -9,6 +9,8 @@ export default defineConfig({
     dts({
       outDir: "dist/types",
       staticImport: true,
+      exclude: [resolve(__dirname, "src/App.vue"), resolve(__dirname, "src/main.ts")],
+      root: ".",
     }),
   ],
   build: {

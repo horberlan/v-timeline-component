@@ -1,4 +1,13 @@
-# 0.2.0 (2024-11-03)
+## [0.2.3](https://github.com/horberlan/v-timeline-component/compare/v0.2.0...v0.2.3) (2024-11-04)
+
+
+### Reverts
+
+* Revert "MIT licence" ([01842b7](https://github.com/horberlan/v-timeline-component/commit/01842b76460c561dd0aefa2f6d9da990cff0e7ee))
+
+
+
+# [0.2.0](https://github.com/horberlan/v-timeline-component/compare/04674b51ac757c733f27437102a4b3f30ed7d3ad...v0.2.0) (2024-11-03)
 
 
 ### Features

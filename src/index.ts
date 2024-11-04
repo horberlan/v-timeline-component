@@ -1,1 +1,1 @@
-export {default as vTimelineComponent} from './v-timeline-component.vue';
+export { default as vTimelineComponent } from './v-timeline-component.vue';

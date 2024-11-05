@@ -14,11 +14,10 @@
       layout: { default: "vertical" }
     },
     setup(__props) {
-      var _a;
       vue.useCssVars((_ctx) => ({
-        "00f04470": _ctx.markerSize,
-        "99313306": _ctx.lineWidth,
-        "6dc7e5a4": _ctx.color
+        "4a543f55": _ctx.markerSize,
+        "10540a10": _ctx.lineWidth,
+        "1433d1ae": _ctx.color
       }));
       const props = __props;
       vue.useSlots();
@@ -28,17 +27,17 @@
       const containerRef = vue.ref(null);
       const markers = vue.ref(null);
       const timelineContainerRect = vue.ref(null);
-      const sortedTimelineEvents = vue.ref(
-        ((_a = props.events) == null ? void 0 : _a.sort((a, b) => +new Date(a.date) - +new Date(b.date))) ?? props.events
+      const sortedTimelineEvents = vue.computed(
+        () => props.events.slice().sort((a, b) => +new Date(a.date) - +new Date(b.date)) ?? props.events
       );
       const lines = vue.ref([]);
-      function generateRandomClass() {
-        return `marker-${Math.random().toString(36).slice(2, 11)}`;
+      function generateRandomMarkerClass() {
+        return `marker-${Math.random().toString(36).substring(2)}`;
       }
       function getCircleSize() {
-        var _a2;
+        var _a;
         const size = parseFloat(props.markerSize || "16");
-        const unit = ((_a2 = props.markerSize) == null ? void 0 : _a2.replace(size.toString(), "")) || "px";
+        const unit = ((_a = props.markerSize) == null ? void 0 : _a.replace(size.toString(), "")) || "px";
         const radius = size / 2;
         return { radius, size, unit };
       }
@@ -54,9 +53,9 @@
             }
           },
           sortedTimelineEvents.value.map((item, index) => {
-            var _a2, _b;
-            const randomMarkerClass = generateRandomClass();
-            return vue.h("div", { class: classes.event }, [
+            var _a, _b;
+            const randomMarkerClass = generateRandomMarkerClass();
+            return vue.h("div", { class: classes.event, tabIndex: 0, ariaLabel: index, style: { display: "flex" } }, [
               !slot["marker"] ? vue.h(
                 "svg",
                 {
@@ -85,7 +84,7 @@
                     fontSize: `${size}${unit}`
                   }
                 },
-                (_a2 = slot["marker"]) == null ? void 0 : _a2.call(slot, { event: item, index })
+                (_a = slot["marker"]) == null ? void 0 : _a.call(slot, { event: item, index })
               ),
               vue.h(
                 "div",
@@ -129,7 +128,7 @@
               y1 = midY - timelineContainerRect.value.top;
               y2 = midY - timelineContainerRect.value.top;
             }
-            const randomLineClass = generateRandomClass();
+            const randomLineClass = generateRandomMarkerClass();
             lines.value.push({ x1, y1, x2, y2, randomClass: randomLineClass });
           }
         });
@@ -152,7 +151,7 @@
         updateMarkersAndLine();
       });
       return (_ctx, _cache) => {
-        var _a2, _b, _c, _d;
+        var _a, _b, _c, _d;
         return vue.openBlock(), vue.createElementBlock("div", {
           ref_key: "containerRef",
           ref: containerRef,
@@ -172,7 +171,7 @@
               left: 0,
               zIndex: 1,
               overflow: "visible",
-              width: props.layout === "horizontal" ? `${((_a2 = timelineContainerRect.value) == null ? void 0 : _a2.width) || 0}px` : "2px",
+              width: props.layout === "horizontal" ? `${((_a = timelineContainerRect.value) == null ? void 0 : _a.width) || 0}px` : "2px",
               height: props.layout === "horizontal" ? "2px" : `${((_b = timelineContainerRect.value) == null ? void 0 : _b.height) || 0}px`
             }),
             viewBox: `0 0 ${props.layout === "horizontal" ? ((_c = timelineContainerRect.value) == null ? void 0 : _c.width) || 0 : 2} ${props.layout === "vertical" ? ((_d = timelineContainerRect.value) == null ? void 0 : _d.height) || 0 : 2}`
@@ -194,16 +193,16 @@
       };
     }
   });
-  const event = "_event_1gn2x_6";
-  const marker = "_marker_1gn2x_20";
+  const event = "_event_1xk11_5";
+  const marker = "_marker_1xk11_19";
   const style0 = {
-    "timeline-events": "_timeline-events_1gn2x_2",
+    "timeline-events": "_timeline-events_1xk11_2",
     event,
-    "event-content": "_event-content_1gn2x_7",
-    "event-content-horizontal": "_event-content-horizontal_1gn2x_13",
-    "event-content-vertical": "_event-content-vertical_1gn2x_16",
+    "event-content": "_event-content_1xk11_6",
+    "event-content-horizontal": "_event-content-horizontal_1xk11_12",
+    "event-content-vertical": "_event-content-vertical_1xk11_15",
     marker,
-    "line-connecting-markers": "_line-connecting-markers_1gn2x_27"
+    "line-connecting-markers": "_line-connecting-markers_1xk11_26"
   };
   const _export_sfc = (sfc, props) => {
     const target = sfc.__vccOpts || sfc;

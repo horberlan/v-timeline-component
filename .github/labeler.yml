@@ -1,11 +1,11 @@
-Documentation:
+asdasdas:
 - changed-files:
   - any-glob-to-any-file: 
     - 'README.md'
     - 'RELEASES.md'
     - 'docs/**/*'
 
-Source Code:
+source:
 - changed-files:
   - any-glob-to-any-file: 'src/**/*'
 

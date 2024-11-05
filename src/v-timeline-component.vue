@@ -127,7 +127,7 @@ function vTimeline() {
     sortedTimelineEvents.value.map((item, index) => {
       const randomMarkerClass = generateRandomMarkerClass();
 
-      return h("div", { class: classes.event, tabIndex: 0, ariaLabel: index }, [
+      return h("div", { class: classes.event, tabIndex: 0, ariaLabel: index, style: {display: 'flex'} }, [
         !slot["marker"]
           ? h(
               "svg",

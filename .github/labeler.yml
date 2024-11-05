@@ -7,7 +7,7 @@ Documentation:
 
 Source Code:
 - changed-files:
-  - any-glob-to-any-file: 'rc/**/*'
+  - any-glob-to-any-file: 'src/**/*'
 
 Configurations:
 - changed-files:

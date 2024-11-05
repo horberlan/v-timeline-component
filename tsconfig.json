@@ -12,8 +12,8 @@
     "lib": ["ESNext", "DOM"],
     "noImplicitAny": false,
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "dist/types/**/*"],
-  "extends": ["./tsconfig.node.json", "@vue/tsconfig/tsconfig.dom.json"]
+  "include": ["src/**/*.ts", "src/**/*.vue", "dist/**/*"],
+  "extends": ["./tsconfig.node.json", "@vue/tsconfig/tsconfig.dom.json"],
 }

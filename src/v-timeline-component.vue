@@ -16,16 +16,10 @@
         left: 0,
         zIndex: 1,
         overflow: 'visible',
-        width: isLayoutHorizontal
-          ? `${timelineContainerRect?.width || 0}px`
-          : '2px',
-        height: isLayoutHorizontal
-          ? '2px'
-          : `${timelineContainerRect?.height || 0}px`,
+        width: svgAttributes.width,
+        height: svgAttributes.height,
       }"
-      :viewBox="`0 0 ${
-        isLayoutHorizontal ? timelineContainerRect?.width || 0 : 2
-      } ${!isLayoutHorizontal ? timelineContainerRect?.height || 0 : 2}`"
+      :viewBox="svgAttributes.viewBox"
     >
       <line
         v-for="(line, index) in lines"
@@ -80,6 +74,7 @@ const classes = useCssModule("vTimeline");
 const slot = useSlots();
 
 const isLayoutHorizontal = ref(props.layout === "horizontal");
+
 watch(props, () => {
   if (props.layout === "horizontal") isLayoutHorizontal.value = true;
 });
@@ -164,6 +159,7 @@ function vTimeline() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    zIndex: 3,
                     fontSize: `${size}${unit}`,
                   },
                 },
@@ -174,7 +170,7 @@ function vTimeline() {
             {
               class: [
                 classes["event-content"],
-                props.layout === "vertical"
+                !isLayoutHorizontal.value
                   ? classes["event-content-vertical"]
                   : classes["event-content-horizontal"],
               ],
@@ -240,6 +236,21 @@ function updateMarkersAndLine() {
   });
 }
 
+const svgAttributes = computed(() => {
+  const width = isLayoutHorizontal.value
+    ? timelineContainerRect.value?.width || 0
+    : 2;
+  const height = isLayoutHorizontal.value
+    ? 2
+    : timelineContainerRect.value?.height || 0;
+
+  return {
+    width: `${width}px`,
+    height: `${height}px`,
+    viewBox: `0 0 ${width} ${height}`,
+  };
+});
+
 onMounted(() => {
   updateMarkersAndLine();
 
@@ -284,7 +295,6 @@ watch(sortedTimelineEvents, () => {
   position: absolute;
   width: v-bind(markerSize);
   height: v-bind(markerSize);
-  z-index: 2;
 }
 
 .line-connecting-markers {

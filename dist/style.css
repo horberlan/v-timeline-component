@@ -1,29 +1,28 @@
 
-._timeline-events_1gn2x_2 {
+._timeline-events_1xk11_2 {
   position: relative;
-  display: block;
 }
-._event_1gn2x_6,
-._event-content_1gn2x_7 {
+._event_1xk11_5,
+._event-content_1xk11_6 {
   position: relative;
   flex: 1;
 }
 
 /* relax young grasshopper, i will remove this soon */
-._event-content-horizontal_1gn2x_13 {
+._event-content-horizontal_1xk11_12 {
   margin-inline-start: 0rem;
 }
-._event-content-vertical_1gn2x_16 {
+._event-content-vertical_1xk11_15 {
   margin-inline-start: 1rem;
 }
-._marker_1gn2x_20 {
+._marker_1xk11_19 {
   position: absolute;
-  width: var(--00f04470);
-  height: var(--00f04470);
+  width: var(--4a543f55);
+  height: var(--4a543f55);
   z-index: 2;
 }
-._line-connecting-markers_1gn2x_27 {
+._line-connecting-markers_1xk11_26 {
   position: absolute;
-  stroke-width: var(--99313306);
-  stroke: var(--6dc7e5a4);
+  stroke-width: var(--10540a10);
+  stroke: var(--1433d1ae);
 }

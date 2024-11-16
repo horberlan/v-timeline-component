@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { ref, type Ref } from "vue";
-import vTimelineComponent from "./v-timeline-component.vue";
+import { vTimelineComponent } from "./index";
 
 interface TimelineEvent {
   title: string;

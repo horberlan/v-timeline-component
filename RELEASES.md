@@ -1,3 +1,12 @@
+## [0.3.1](https://github.com/horberlan/v-timeline-component/compare/v0.3.0...v0.3.1) (2024-11-16)
+
+
+### Bug Fixes
+
+* **typo:** labeler.yml ([efb8f14](https://github.com/horberlan/v-timeline-component/commit/efb8f14029b416225e56e0e38dab7ec16baef0ec))
+
+
+
 # [0.3.0](https://github.com/horberlan/v-timeline-component/compare/v0.2.3...v0.3.0) (2024-11-16)
 
 

@@ -1,3 +1,12 @@
+# [0.3.0](https://github.com/horberlan/v-timeline-component/compare/v0.2.3...v0.3.0) (2024-11-16)
+
+
+### Features
+
+* add svg-attributes, reducing code and logic ([e8fb8fe](https://github.com/horberlan/v-timeline-component/commit/e8fb8fe3962e3d256a06b81b84e505ec25edc361))
+
+
+
 ## [0.2.3](https://github.com/horberlan/v-timeline-component/compare/v0.2.0...v0.2.3) (2024-11-04)
 
 

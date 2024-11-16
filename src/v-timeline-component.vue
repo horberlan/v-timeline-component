@@ -16,20 +16,10 @@
         left: 0,
         zIndex: 1,
         overflow: 'visible',
-        width:
-          props.layout === 'horizontal'
-            ? `${timelineContainerRect?.width || 0}px`
-            : '2px',
-        height:
-          props.layout === 'horizontal'
-            ? '2px'
-            : `${timelineContainerRect?.height || 0}px`,
+        width: svgAttributes.width,
+        height: svgAttributes.height,
       }"
-      :viewBox="`0 0 ${
-        props.layout === 'horizontal' ? timelineContainerRect?.width || 0 : 2
-      } ${
-        props.layout === 'vertical' ? timelineContainerRect?.height || 0 : 2
-      }`"
+      :viewBox="svgAttributes.viewBox"
     >
       <line
         v-for="(line, index) in lines"
@@ -83,6 +73,12 @@ const slots = defineSlots<{
 const classes = useCssModule("vTimeline");
 const slot = useSlots();
 
+const isLayoutHorizontal = ref(props.layout === "horizontal");
+
+watch(props, () => {
+  if (props.layout === "horizontal") isLayoutHorizontal.value = true;
+});
+
 const uniqueId = `timeline-${Math.random().toString(36).slice(2, 11)}`;
 
 const containerRef = ref<HTMLElement | null>(null);
@@ -120,59 +116,69 @@ function vTimeline() {
     {
       class: `${classes["timeline-events"]} ${uniqueId}`,
       style: {
-        display: props.layout === "horizontal" ? "flex" : "block",
-        flexDirection: props.layout === "horizontal" ? "row" : "column",
+        display: isLayoutHorizontal.value ? "flex" : "block",
+        flexDirection: isLayoutHorizontal.value ? "row" : "column",
       },
     },
     sortedTimelineEvents.value.map((item, index) => {
       const randomMarkerClass = generateRandomMarkerClass();
 
-      return h("div", { class: classes.event, tabIndex: 0, ariaLabel: index, style: {display: 'flex'} }, [
-        !slot["marker"]
-          ? h(
-              "svg",
-              {
-                width: `${size}${unit}`,
-                height: `${size}${unit}`,
-                class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`,
-              },
-              [
-                h("circle", {
-                  cx: `${radius}${unit}`,
-                  cy: `${radius}${unit}`,
-                  r: `${radius / 2}${unit}`,
-                  fill: props.color,
-                }),
-              ]
-            )
-          : h(
-              "div",
-              {
-                class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`,
-                style: {
+      return h(
+        "div",
+        {
+          class: classes.event,
+          tabIndex: 0,
+          ariaLabel: index,
+          style: { display: "flex" },
+        },
+        [
+          !slot["marker"]
+            ? h(
+                "svg",
+                {
                   width: `${size}${unit}`,
                   height: `${size}${unit}`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: `${size}${unit}`,
+                  class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`,
                 },
-              },
-              slot["marker"]?.({ event: item, index })
-            ),
-        h(
-          "div",
-          {
-            class: [
-              classes["event-content"],
-              props.layout === "vertical"
-                ? classes["event-content-vertical"]
-                : classes["event-content-horizontal"],
-            ],
-          },
-          slot.default?.({ event: item, index })
-        ),
-      ]);
+                [
+                  h("circle", {
+                    cx: `${radius}${unit}`,
+                    cy: `${radius}${unit}`,
+                    r: `${radius / 2}${unit}`,
+                    fill: props.color,
+                  }),
+                ]
+              )
+            : h(
+                "div",
+                {
+                  class: `${classes.marker} ${uniqueId} ${randomMarkerClass}`,
+                  style: {
+                    width: `${size}${unit}`,
+                    height: `${size}${unit}`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 3,
+                    fontSize: `${size}${unit}`,
+                  },
+                },
+                slot["marker"]?.({ event: item, index })
+              ),
+          h(
+            "div",
+            {
+              class: [
+                classes["event-content"],
+                !isLayoutHorizontal.value
+                  ? classes["event-content-vertical"]
+                  : classes["event-content-horizontal"],
+              ],
+            },
+            slot.default?.({ event: item, index })
+          ),
+        ]
+      );
     })
   );
 }
@@ -218,7 +224,7 @@ function updateMarkersAndLine() {
         timelineContainerRect.value.top +
         nextMarkerRect.height / 2;
 
-      if (props.layout === "horizontal") {
+      if (isLayoutHorizontal.value) {
         const midY = nextMarkerRect.height / 2 + nextMarkerRect.top;
         y1 = midY - timelineContainerRect.value.top;
         y2 = midY - timelineContainerRect.value.top;
@@ -229,6 +235,21 @@ function updateMarkersAndLine() {
     }
   });
 }
+
+const svgAttributes = computed(() => {
+  const width = isLayoutHorizontal.value
+    ? timelineContainerRect.value?.width || 0
+    : 2;
+  const height = isLayoutHorizontal.value
+    ? 2
+    : timelineContainerRect.value?.height || 0;
+
+  return {
+    width: `${width}px`,
+    height: `${height}px`,
+    viewBox: `0 0 ${width} ${height}`,
+  };
+});
 
 onMounted(() => {
   updateMarkersAndLine();
@@ -274,7 +295,6 @@ watch(sortedTimelineEvents, () => {
   position: absolute;
   width: v-bind(markerSize);
   height: v-bind(markerSize);
-  z-index: 2;
 }
 
 .line-connecting-markers {

@@ -2,7 +2,7 @@
 
 ### Customizable Timeline Component for Vue
 
-The `v-timeline-component` is a slot based vue.js component that displays events in a timeline format. It offers both vertical and horizontal layouts, enabling customization of event presentation, styling, and content.
+The `v-timeline-component` is a Vue.js component that utilizes slots to display events in a timeline format. It supports both vertical and horizontal layouts, allowing for customization of event presentation, styling, and content. You can also view it at [showcase](https://horberlan.netlify.app/projects/v-timeline-component).
 
 ## Features
 
